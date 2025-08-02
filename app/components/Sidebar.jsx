@@ -1,7 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { FiChevronRight, FiX, FiMenu } from 'react-icons/fi';
+import {
+  FiChevronRight,
+  FiX,
+  FiMenu,
+  FiHome,
+  FiSettings,
+  FiUsers,
+  FiBarChart2,
+  FiFolder
+} from 'react-icons/fi';
 import { Scrollbar } from 'react-scrollbars-custom';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -10,37 +19,47 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [menuGroups, setMenuGroups] = useState({});
   const [isMobile, setIsMobile] = useState(false);
 
-  // Hover & active color palette
+  // Inline hover animation style generator
+  const hoverSlideStyle = (start, end) => ({
+    backgroundImage: `linear-gradient(to right, ${start} 0%, ${end} 100%)`,
+    backgroundSize: '0% 100%',
+    backgroundRepeat: 'no-repeat',
+    transition: 'background-size 0.3s ease-in-out'
+  });
+
+  const hoverSlideActiveStyle = (start, end) => ({
+    backgroundImage: `linear-gradient(to right, ${start} 0%, ${end} 100%)`,
+    backgroundSize: '100% 100%',
+    backgroundRepeat: 'no-repeat'
+  });
+
+  // Color palettes
   const colorPalettes = [
-    {
-      hover: 'bg-gradient-to-r from-transparent to-transparent hover:from-blue-50 hover:to-blue-100 dark:hover:from-blue-900/20 dark:hover:to-blue-900/30',
-      active: 'bg-gradient-to-r from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/30 text-blue-600 dark:text-blue-400'
-    },
-    {
-      hover: 'bg-gradient-to-r from-transparent to-transparent hover:from-green-50 hover:to-green-100 dark:hover:from-green-900/20 dark:hover:to-green-900/30',
-      active: 'bg-gradient-to-r from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 text-green-600 dark:text-green-400'
-    },
-    {
-      hover: 'bg-gradient-to-r from-transparent to-transparent hover:from-purple-50 hover:to-purple-100 dark:hover:from-purple-900/20 dark:hover:to-purple-900/30',
-      active: 'bg-gradient-to-r from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 text-purple-600 dark:text-purple-400'
-    },
-    {
-      hover: 'bg-gradient-to-r from-transparent to-transparent hover:from-pink-50 hover:to-pink-100 dark:hover:from-pink-900/20 dark:hover:to-pink-900/30',
-      active: 'bg-gradient-to-r from-pink-50 to-pink-100 dark:from-pink-900/20 dark:to-pink-900/30 text-pink-600 dark:text-pink-400'
-    },
-    {
-      hover: 'bg-gradient-to-r from-transparent to-transparent hover:from-yellow-50 hover:to-yellow-100 dark:hover:from-yellow-900/20 dark:hover:to-yellow-900/30',
-      active: 'bg-gradient-to-r from-yellow-50 to-yellow-100 dark:from-yellow-900/20 dark:to-yellow-900/30 text-yellow-600 dark:text-yellow-400'
-    },
-    {
-      hover: 'bg-gradient-to-r from-transparent to-transparent hover:from-red-50 hover:to-red-100 dark:hover:from-red-900/20 dark:hover:to-red-900/30',
-      active: 'bg-gradient-to-r from-red-50 to-red-100 dark:from-red-900/20 dark:to-red-900/30 text-red-600 dark:text-red-400'
-    },
-    {
-      hover: 'bg-gradient-to-r from-transparent to-transparent hover:from-cyan-50 hover:to-cyan-100 dark:hover:from-cyan-900/20 dark:hover:to-cyan-900/30',
-      active: 'bg-gradient-to-r from-cyan-50 to-cyan-100 dark:from-cyan-900/20 dark:to-cyan-900/30 text-cyan-600 dark:text-cyan-400'
-    }
+    { start: '#eff6ff', end: '#dbeafe', active: 'text-blue-600 dark:text-blue-400' },
+    { start: '#ecfdf5', end: '#d1fae5', active: 'text-green-600 dark:text-green-400' },
+    { start: '#f5f3ff', end: '#ede9fe', active: 'text-purple-600 dark:text-purple-400' },
+    { start: '#fdf2f8', end: '#fce7f3', active: 'text-pink-600 dark:text-pink-400' },
+    { start: '#fefce8', end: '#fef9c3', active: 'text-yellow-600 dark:text-yellow-400' },
+    { start: '#fef2f2', end: '#fee2e2', active: 'text-red-600 dark:text-red-400' },
+    { start: '#ecfeff', end: '#cffafe', active: 'text-cyan-600 dark:text-cyan-400' }
   ];
+
+  // Group icons
+  const groupIcons = {
+    Dashboard: <FiHome className="text-lg" />,
+    Settings: <FiSettings className="text-lg" />,
+    Users: <FiUsers className="text-lg" />,
+    Reports: <FiBarChart2 className="text-lg" />,
+    Default: <FiFolder className="text-lg" />
+  };
+
+  // Item icons
+  const itemIcons = {
+    DashboardHome: <FiHome className="text-lg" />,
+    UserManagement: <FiUsers className="text-lg" />,
+    Reports: <FiBarChart2 className="text-lg" />,
+    Default: <FiFolder className="text-lg" />
+  };
 
   // Detect screen size
   useEffect(() => {
@@ -111,17 +130,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               background: 'rgba(100, 116, 139, 0.6)',
               borderRadius: '9999px',
               width: '6px',
-              minHeight: '20px',
-            },
+              minHeight: '20px'
+            }
           }}
           trackYProps={{
             style: {
               background: 'transparent',
-              width: '6px',
-            },
+              width: '6px'
+            }
           }}
         >
-          <div className="p-4">
+          <div>
             <nav className="flex flex-col gap-3">
               {Object.entries(menuGroups).map(([groupName, items], groupIndex) => {
                 const isGroupOpen = expanded === groupName;
@@ -133,13 +152,20 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     <button
                       onClick={() => setExpanded(isGroupOpen ? '' : groupName)}
                       className={`relative w-full flex items-center justify-between px-4 py-4 text-sm font-semibold rounded-e-3xl transition 
-                        ${isGroupOpen 
-                          ? groupPalette.active 
-                          : `text-gray-700 dark:text-gray-200 ${groupPalette.hover}`
-                        }`}
+                        ${isGroupOpen ? groupPalette.active : 'text-gray-700 dark:text-gray-200'}`}
+                      style={
+                        isGroupOpen
+                          ? hoverSlideActiveStyle(groupPalette.start, groupPalette.end)
+                          : hoverSlideStyle(groupPalette.start, groupPalette.end)
+                      }
+                      onMouseEnter={(e) => !isGroupOpen && (e.currentTarget.style.backgroundSize = '100% 100%')}
+                      onMouseLeave={(e) => !isGroupOpen && (e.currentTarget.style.backgroundSize = '0% 100%')}
                       aria-expanded={isGroupOpen}
                     >
-                      <span className="flex-1 text-left">{groupName}</span>
+                      <span className="flex items-center gap-2 flex-1 text-left">
+                        {groupIcons[groupName] || groupIcons.Default}
+                        {groupName}
+                      </span>
                       <span
                         className={`transform transition-transform duration-200 ${isGroupOpen ? 'rotate-90' : ''}`}
                       >
@@ -150,7 +176,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     {/* Dropdown Items */}
                     <div
                       className={`transition-all duration-300 overflow-hidden ${
-                        isGroupOpen ? 'max-h-[500px] mt-1' : 'max-h-0'
+                        isGroupOpen ? 'max-h-[9999px] mt-1' : 'max-h-0'
                       }`}
                     >
                       <div className="pl-0 pr-0 flex flex-col gap-2">
@@ -166,11 +192,16 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                                 if (isMobile) setIsOpen(false);
                               }}
                               className={`relative flex items-center gap-2 px-4 py-4 cursor-pointer rounded-e-3xl transition-colors duration-200 
-                                ${isActive
-                                  ? palette.active
-                                  : `text-gray-700 dark:text-gray-200 ${palette.hover}`
-                                }`}
+                                ${isActive ? palette.active : 'text-gray-700 dark:text-gray-200'}`}
+                              style={
+                                isActive
+                                  ? hoverSlideActiveStyle(palette.start, palette.end)
+                                  : hoverSlideStyle(palette.start, palette.end)
+                              }
+                              onMouseEnter={(e) => !isActive && (e.currentTarget.style.backgroundSize = '100% 100%')}
+                              onMouseLeave={(e) => !isActive && (e.currentTarget.style.backgroundSize = '0% 100%')}
                             >
+                              {itemIcons[item.WebModuleName] || itemIcons.Default}
                               <span className="relative z-10 text-sm truncate">
                                 {item.WebModuleName || 'Unnamed'}
                               </span>
