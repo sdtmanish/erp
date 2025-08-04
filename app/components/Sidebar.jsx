@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 import {
   FiChevronRight,
-  FiX,
-  FiMenu,
   FiHome,
   FiSettings,
   FiUsers,
@@ -19,7 +17,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [menuGroups, setMenuGroups] = useState({});
   const [isMobile, setIsMobile] = useState(false);
 
-  // Inline hover animation style generator
+  // Hover animation
   const hoverSlideStyle = (start, end) => ({
     backgroundImage: `linear-gradient(to right, ${start} 0%, ${end} 100%)`,
     backgroundSize: '0% 100%',
@@ -88,37 +86,15 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   return (
     <>
-      {/* Toggle Button (Mobile Only) */}
-      {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="fixed top-7 left-6 z-50 p-2 bg-white border rounded-full shadow-md hover:bg-gray-200 dark:bg-gray-900 dark:border-gray-700 dark:hover:bg-gray-700"
-        >
-          <FiMenu className="text-xl text-gray-700 dark:text-gray-300" />
-        </button>
-      )}
-
-      {/* Sidebar Panel */}
       <aside
-        className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 shadow-md border-r border-blue-100 dark:border-gray-800 flex flex-col transition-transform duration-300 z-40 rounded-none md:rounded-e-3xl 
-          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-          ${isMobile ? 'w-full' : 'w-64'}
-        `}
+        className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 shadow-md border-r border-blue-100 dark:border-gray-800 flex flex-col transition-all duration-300 z-40 rounded-none 
+          ${isMobile ? (isOpen ? 'w-full' : 'w-0') : isOpen ? 'w-64' : 'w-16'}`}
       >
         {/* Sidebar Header */}
-        <div className="p-4 pt-8 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <img src="/assets/logo.png" className="w-6 h-6" alt="Logo" />
-              <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">Spike Admin</h1>
-            </div>
-            <button
-              onClick={() => setIsOpen(false)}
-              className="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
-              title="Close Sidebar"
-            >
-              <FiX className="text-xl text-gray-600 dark:text-gray-400" />
-            </button>
+        <div className="p-4 pt-8 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-50 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <img src="/assets/logo.png" className="w-6 h-6" alt="Logo" />
+            {isOpen && <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">Spike Admin</h1>}
           </div>
         </div>
 
@@ -134,24 +110,20 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             }
           }}
           trackYProps={{
-            style: {
-              background: 'transparent',
-              width: '6px'
-            }
+            style: { background: 'transparent', width: '6px' }
           }}
         >
           <div>
-            <nav className="flex flex-col gap-3">
+            <nav className="flex flex-col gap-3 mt-2">
               {Object.entries(menuGroups).map(([groupName, items], groupIndex) => {
-                const isGroupOpen = expanded === groupName;
+                const isGroupOpen = expanded === groupName && isOpen;
                 const groupPalette = colorPalettes[groupIndex % colorPalettes.length];
 
                 return (
                   <div key={groupName}>
-                    {/* Group Button */}
                     <button
                       onClick={() => setExpanded(isGroupOpen ? '' : groupName)}
-                      className={`relative w-full flex items-center justify-between px-4 py-4 text-sm font-semibold rounded-e-3xl transition 
+                      className={`relative w-full flex items-center px-4 py-3 text-sm font-semibold rounded-e-3xl transition 
                         ${isGroupOpen ? groupPalette.active : 'text-gray-700 dark:text-gray-200'}`}
                       style={
                         isGroupOpen
@@ -162,54 +134,58 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                       onMouseLeave={(e) => !isGroupOpen && (e.currentTarget.style.backgroundSize = '0% 100%')}
                       aria-expanded={isGroupOpen}
                     >
-                      <span className="flex items-center gap-2 flex-1 text-left">
+                      <span className="flex items-center gap-2 flex-1">
                         {groupIcons[groupName] || groupIcons.Default}
-                        {groupName}
+                        {isOpen && <span>{groupName}</span>}
                       </span>
-                      <span
-                        className={`transform transition-transform duration-200 ${isGroupOpen ? 'rotate-90' : ''}`}
-                      >
-                        <FiChevronRight className="text-gray-500 dark:text-gray-400" />
-                      </span>
+                      {isOpen && (
+                        <FiChevronRight
+                          className={`transition-transform duration-200 ${isGroupOpen ? 'rotate-90' : ''}`}
+                        />
+                      )}
                     </button>
 
                     {/* Dropdown Items */}
-                    <div
-                      className={`transition-all duration-300 overflow-hidden ${
-                        isGroupOpen ? 'max-h-[9999px] mt-1' : 'max-h-0'
-                      }`}
-                    >
-                      <div className="pl-0 pr-0 flex flex-col gap-2">
-                        {items.map((item, i) => {
-                          const isActive = active === item.WebModuleName;
-                          const palette = colorPalettes[i % colorPalettes.length];
+                    {isOpen && (
+                      <div
+                        className={`transition-all duration-300 overflow-hidden ${
+                          isGroupOpen ? 'max-h-[9999px] mt-1' : 'max-h-0'
+                        }`}
+                      >
+                        <div className="pl-0 pr-0 flex flex-col gap-2">
+                          {items.map((item, i) => {
+                            const isActive = active === item.WebModuleName;
+                            const palette = colorPalettes[i % colorPalettes.length];
 
-                          return (
-                            <div
-                              key={i}
-                              onClick={() => {
-                                setActive(item.WebModuleName);
-                                if (isMobile) setIsOpen(false);
-                              }}
-                              className={`relative flex items-center gap-2 px-4 py-4 cursor-pointer rounded-e-3xl transition-colors duration-200 
-                                ${isActive ? palette.active : 'text-gray-700 dark:text-gray-200'}`}
-                              style={
-                                isActive
-                                  ? hoverSlideActiveStyle(palette.start, palette.end)
-                                  : hoverSlideStyle(palette.start, palette.end)
-                              }
-                              onMouseEnter={(e) => !isActive && (e.currentTarget.style.backgroundSize = '100% 100%')}
-                              onMouseLeave={(e) => !isActive && (e.currentTarget.style.backgroundSize = '0% 100%')}
-                            >
-                              {itemIcons[item.WebModuleName] || itemIcons.Default}
-                              <span className="relative z-10 text-sm truncate">
-                                {item.WebModuleName || 'Unnamed'}
-                              </span>
-                            </div>
-                          );
-                        })}
+                            return (
+                              <div
+                                key={i}
+                                onClick={() => {
+                                  setActive(item.WebModuleName);
+                                  if (isMobile) setIsOpen(false);
+                                }}
+                                className={`flex items-center gap-2 px-4 py-2 cursor-pointer rounded-e-3xl transition-colors duration-200 
+                                  ${isActive ? palette.active : 'text-gray-700 dark:text-gray-200'}`}
+                                style={
+                                  isActive
+                                    ? hoverSlideActiveStyle(palette.start, palette.end)
+                                    : hoverSlideStyle(palette.start, palette.end)
+                                }
+                                onMouseEnter={(e) => !isActive && (e.currentTarget.style.backgroundSize = '100% 100%')}
+                                onMouseLeave={(e) => !isActive && (e.currentTarget.style.backgroundSize = '0% 100%')}
+                              >
+                                {itemIcons[item.WebModuleName] || itemIcons.Default}
+                                {isOpen && (
+                                  <span className="relative z-10 text-sm truncate">
+                                    {item.WebModuleName || 'Unnamed'}
+                                  </span>
+                                )}
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 );
               })}
@@ -219,19 +195,23 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
         {/* Footer */}
         <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <div className="flex items-center justify-between bg-blue-50 dark:bg-gray-800 px-4 py-2 rounded-2xl cursor-pointer hover:shadow-sm transition">
+          <div
+            className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} bg-blue-50 dark:bg-gray-800 px-4 py-2 rounded-2xl cursor-pointer hover:shadow-sm transition`}
+          >
             <div className="flex items-center gap-2">
               <img
                 src="/assets/logo.png"
                 className="w-8 h-8 rounded-full object-cover"
                 alt="User"
               />
-              <div>
-                <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Mike</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Admin</p>
-              </div>
+              {isOpen && (
+                <div>
+                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Mike</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Admin</p>
+                </div>
+              )}
             </div>
-            <FiChevronRight className="text-gray-500 dark:text-gray-400" />
+            {isOpen && <FiChevronRight className="text-gray-500 dark:text-gray-400" />}
           </div>
         </div>
       </aside>

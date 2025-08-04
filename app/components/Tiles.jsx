@@ -2,20 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { FiDollarSign, FiRefreshCw, FiShoppingCart } from 'react-icons/fi';
 
 export default function Tiles() {
   const [tiles, setTiles] = useState([]);
-
-  // Color palette to rotate between for vibrant tiles
-  const colors = [
-    'from-blue-500 to-blue-400',
-    'from-green-500 to-green-400',
-    'from-purple-500 to-purple-400',
-    'from-pink-500 to-pink-400',
-    'from-yellow-500 to-yellow-400',
-    'from-red-500 to-red-400',
-    'from-cyan-500 to-cyan-400',
-  ];
 
   useEffect(() => {
     const stored = localStorage.getItem('menuData');
@@ -26,24 +16,67 @@ export default function Tiles() {
     }
   }, []);
 
-  return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-4 gap-y-4 p-6 bg-gradient-to-br from-[#f8f9fc] to-[#eef2ff]">
-      {tiles.map((tile, index) => (
-        <motion.div
-          key={index}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: index * 0.05 }}
-          whileHover={{ scale: 1.05 }}
-          className={`h-20 w-full flex items-center justify-center text-center text-sm font-medium text-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer bg-gradient-to-r ${
-            colors[index % colors.length]
-          }`}
-        >
-          <span className="px-2">{tile.WebModuleName || 'Unnamed'}</span>
-        </motion.div>
-      ))}
+  const icons = [<FiShoppingCart />, <FiRefreshCw />, <FiDollarSign />];
 
-      {/* If no tiles are available */}
+  // Define color themes per tile
+  const tileThemes = [
+    {
+      bg: 'bg-[#0984e3]', // blue
+      blob: 'from-orange-300 to-pink-400',
+    },
+    {
+      bg: 'bg-[#00b894]', // green
+      blob: 'from-green-300 to-emerald-500',
+    },
+    {
+      bg: 'bg-[#fd79a8]', // pink
+      blob: 'from-pink-300 to-red-400',
+    },
+    {
+      bg: 'bg-[#6c5ce7]', // purple
+      blob: 'from-indigo-300 to-purple-400',
+    },
+    {
+      bg: 'bg-[#e17055]', // orange
+      blob: 'from-yellow-300 to-orange-400',
+    },
+    {
+      bg: 'bg-[#00cec9]', // teal
+      blob: 'from-cyan-300 to-teal-400',
+    },
+  ];
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 p-6 bg-[#f5f7fa]">
+      {tiles.map((tile, index) => {
+        const theme = tileThemes[index % tileThemes.length];
+        return (
+          <motion.div
+            key={index}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+            whileHover={{ scale: 1.03 }}
+            className={`relative ${theme.bg} rounded-xl text-white p-5 shadow-lg overflow-hidden`}
+          >
+            {/* Corner blob with matching gradient */}
+            <div
+              className={`absolute top-0 right-0 w-20 h-20 rounded-bl-full bg-gradient-to-br ${theme.blob} -z-0`}
+            ></div>
+
+            {/* Icon */}
+            <div className="text-3xl relative z-10 mb-4">
+              {icons[index % icons.length]}
+            </div>
+
+            {/* Tile name */}
+            <p className="text-lg font-medium relative z-10">
+              {tile.WebModuleName}
+            </p>
+          </motion.div>
+        );
+      })}
+
       {tiles.length === 0 && (
         <div className="col-span-full text-center text-gray-500 py-6">
           No tiles available.

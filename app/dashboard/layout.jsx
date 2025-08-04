@@ -1,23 +1,21 @@
 'use client';
-import {useState} from 'react';
+
+import { useState } from 'react';
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 
-
 export default function DashboardLayout({ children }) {
-const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <div className=" fixed top-0 left-0 h-screen z-50 bg-white border-r">
-        <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen}/>
-      </div>
+      <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
-      {/* Main Content */}
+      {/* Main Content Area */}
       <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
-        <Header/>
-        <main className="flex-1 p-4 overflow-auto">
+        <Header isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
+        <main className={`flex-1  p-4 overflow-auto ${isSidebarOpen ? 'ml-2' : 'ml-16'}`}>
           {children}
         </main>
       </div>
