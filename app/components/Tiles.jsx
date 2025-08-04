@@ -47,7 +47,7 @@ export default function Tiles() {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 p-6 bg-[#f5f7fa]">
+    <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-6 p-6 bg-[#f5f7fa]">
       {tiles.map((tile, index) => {
         const theme = tileThemes[index % tileThemes.length];
         return (
@@ -57,7 +57,7 @@ export default function Tiles() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
             whileHover={{ scale: 1.03 }}
-            className={`relative ${theme.bg} rounded-xl text-white p-5 shadow-lg overflow-hidden`}
+            className={`relative ${theme.bg} rounded-xl text-white  p-2 shadow-lg overflow-hidden sm:p-5`}
           >
             {/* Corner blob with matching gradient */}
             <div
@@ -65,12 +65,12 @@ export default function Tiles() {
             ></div>
 
             {/* Icon */}
-            <div className="text-3xl relative z-10 mb-4">
+            <div className="text-xl relative z-10 mb-4 md:text-3xl">
               {icons[index % icons.length]}
             </div>
 
             {/* Tile name */}
-            <p className="text-lg font-medium relative z-10">
+            <p className="text-sm font-medium relative z-10 sm:text-lg">
               {tile.WebModuleName}
             </p>
           </motion.div>

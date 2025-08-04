@@ -9,9 +9,10 @@ export default function Header({ isOpen, setIsOpen }) {
   const [search, setSearch] = useState('');
 
   return (
-    <header className="bg-white shadow rounded-2xl mt-4 px-4 py-3 transition-all duration-300 w-full max-w-[1400px] mx-auto">
+  <header className="w-[96%] md:w-[80%] max-w-[1400px] bg-white shadow rounded-2xl mt-4 px-4 py-3 transition-all duration-300 mx-auto">
+
       {/* Desktop Layout */}
-      <div className="hidden md:flex items-center justify-between w-full">
+      <div className="hidden xl:flex items-center justify-between w-full">
         {/* Left Section */}
         <div className="flex items-center gap-4 flex-shrink-0">
           <button
@@ -32,7 +33,7 @@ export default function Header({ isOpen, setIsOpen }) {
         </div>
 
         {/* Center Section: Search */}
-        <div className="flex items-center border rounded-full px-4 py-1 w-72 bg-gray-50 justify-center">
+        <div className="flex items-center border border-gray-500 h-10 rounded-full px-4 py-1 w-60 bg-gray-50  justify-center">
           <FiSearch className="text-gray-400 text-sm" />
           <input
             type="text"
@@ -123,7 +124,7 @@ export default function Header({ isOpen, setIsOpen }) {
       </div>
 
       {/* Mobile Layout */}
-      <div className="flex flex-col md:hidden w-full gap-4">
+      <div className="flex flex-col xl:hidden w-full gap-4">
         <div className="flex items-center justify-between">
           <button
             onClick={() => setIsOpen(!isOpen)}
@@ -144,14 +145,14 @@ export default function Header({ isOpen, setIsOpen }) {
           </div>
         </div>
 
-        <div className="flex items-center border rounded-full px-4 py-1 w-full bg-gray-50">
-          <FiSearch className="text-gray-400 text-sm" />
+        <div className="flex items-center justify-center border border-gray-400 h-10 rounded-full px-4 py-1 w-[96%] bg-gray-50 mx-auto flex items-center">
+          <FiSearch className="text-gray-400 text-sm " />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Try to searching ..."
-            className="outline-none bg-white text-sm px-2 w-full"
+            className="outline-none bg-white text-sm px-2 w-full "
           />
         </div>
       </div>

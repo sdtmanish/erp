@@ -13,9 +13,14 @@ export default function DashboardLayout({ children }) {
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
 
       {/* Main Content Area */}
-      <div className={`flex-1 flex flex-col transition-all duration-300 ${isSidebarOpen ? 'ml-64' : 'ml-0'}`}>
+      <div
+        className={`flex-1 flex flex-col transition-all duration-300 ${
+          isSidebarOpen ? 'ml-0 md:ml-64' : 'ml-0'
+        }`}
+      >
         <Header isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
-        <main className={`flex-1  p-4 overflow-auto ${isSidebarOpen ? 'ml-2' : 'ml-16'}`}>
+        
+        <main className="flex-1 p-4 overflow-auto md:ml-16">
           {children}
         </main>
       </div>
