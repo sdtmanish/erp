@@ -24,6 +24,9 @@ export default function Login() {
 
       const data = await res.json();
       console.log('Login API Response:', data);
+      console.log('Login API Response:', data);
+console.log('✅ User ID received:', data[0].UserId || 'UserId not found in object');
+
       localStorage.setItem('menuData',JSON.stringify(data));
 
       // ✅ Redirect to dashboard on success
