@@ -171,7 +171,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                           isGroupOpen ? 'max-h-[9999px] mt-1' : 'max-h-0'
                         }`}
                       >
-                        <div className="pl-0 pr-0 flex flex-col gap-2">
+                        <div className="pl-4 pr-0 flex flex-col gap-2">
                           {items.map((item, i) => {
                             const isActive = active === item.WebModuleName;
                             const palette = colorPalettes[i % colorPalettes.length];

@@ -1,12 +1,44 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FiSearch, FiMoon } from 'react-icons/fi';
 import { HiOutlineChatBubbleOvalLeft } from 'react-icons/hi2';
 import { PiDotsSixVerticalBold } from 'react-icons/pi';
 import { BiMenuAltLeft } from 'react-icons/bi';
+import {useRouter} from 'next/navigation';
 
 export default function Header({ isOpen, setIsOpen }) {
   const [search, setSearch] = useState('');
+  const [name, setName] = useState('Mike Nielsen');
+  const [userType, setUserType] = useState('Admin');
+
+  const router = useRouter();
+
+  useEffect(()=>{
+
+    try{
+      const storedUser = localStorage.getItem('userData');
+      if(storedUser){
+
+        const user = JSON.parse(storedUser);
+        if(user?.UserName && user?.UserType){
+          setName(user.UserName);
+          setUserType(user.UserType);
+        }else{
+          console.error('User name not found in userData');
+        }
+      }else{
+        console.error('No userData found in localStorage');
+      }
+
+    }catch(err){
+      console.error("Error reading localStorage:", err);
+    }
+
+  },[]);
+
+  const handleLogOut = () => {
+    router.push('/');
+  }
 
   return (
   <header className="w-[96%] md:w-[80%] max-w-[1400px] bg-white shadow rounded-2xl mt-4 px-4 py-3 transition-all duration-300 mx-auto">
@@ -59,8 +91,8 @@ export default function Header({ isOpen, setIsOpen }) {
                 className="w-8 h-8 rounded-full object-cover"
               />
               <div className="hidden sm:block text-sm">
-                <p className="font-medium text-gray-800">Mike Nielsen</p>
-                <p className="text-gray-400 text-xs">Admin</p>
+                <p className="font-medium text-gray-800">{name}</p>
+                <p className="text-gray-400 text-xs">{userType}</p>
               </div>
               <span className="w-2 h-2 bg-green-500 rounded-full ml-1" />
             </div>
@@ -115,7 +147,9 @@ export default function Header({ isOpen, setIsOpen }) {
                 </button>
               </div>
 
-              <button className="w-full mt-4 bg-blue-500 text-white py-2 rounded-xl font-medium hover:bg-blue-600 transition">
+              <button 
+              onClick={handleLogOut}
+              className="w-full mt-4 bg-blue-500 text-white py-2 cursor-pointer rounded-xl font-medium hover:bg-blue-600 transition">
                 Log Out
               </button>
             </div>

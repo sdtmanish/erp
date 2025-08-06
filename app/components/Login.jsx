@@ -9,63 +9,63 @@ export default function Login() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-  try {
-    // 1. Login API Call
-    const res = await fetch('http://apidol.myportal.co.in/api/LoginUserWeb', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'APIKey': 'Sdt!@#321',
-      },
-      body: JSON.stringify({
-        LoginName: username,
-        Password: password,
-      }),
-    });
-
-    const data = await res.json();
-    console.log('🔑 Login API Response:', data);
-
-    // 2. Check for valid login response
-    if (Array.isArray(data) && data.length > 0) {
-      const userId = data[0]?.UserCode;
-      const userType = data[0]?.UserType;
-
-      console.log('✅ User ID:', userId || 'Not found');
-      console.log('✅ User Type:', userType || 'Not found');
-
-      // 3. LeftMenu API Call using login data
-      const menuRes = await fetch('http://apidol.myportal.co.in/api/LeftMenu', {
+    try {
+      // 1. Login API Call
+      const res = await fetch('http://apidol.myportal.co.in/api/LoginUserWeb', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'APIKey': 'Sdt!@#321',
         },
         body: JSON.stringify({
-          UserId: userId,
-          UserType: userType,
+          LoginName: username,
+          Password: password,
         }),
       });
 
-      const menuData = await menuRes.json();
-      console.log('📋 Menu API Response:', menuData);
+      const data = await res.json();
+      console.log('🔑 Login API Response:', data);
 
-      // 4. Save data to localStorage
-      localStorage.setItem('userData', JSON.stringify(data));      // Login info
-      localStorage.setItem('menuData', JSON.stringify(menuData));  // Menu info
+      // 2. Check for valid login response
+      if (Array.isArray(data) && data.length > 0) {
+        const user = data[0]; // take only the first user
+        const userId = user.UserCode;
+        const userType = user.UserType;
+        
+        console.log('✅ User ID:', userId || 'Not found');
+        console.log('✅ User Type:', userType || 'Not found');
 
-      // 5. Redirect
-      router.push('/dashboard');
-    } else {
-      console.warn('❌ API did not return valid user data:', data);
-      alert('Login failed. Please check your username and password.');
+        // 3. LeftMenu API Call using login data
+        const menuRes = await fetch('http://apidol.myportal.co.in/api/LeftMenu', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'APIKey': 'Sdt!@#321',
+          },
+          body: JSON.stringify({
+            UserId: userId,
+            UserType: userType,
+          }),
+        });
+
+        const menuData = await menuRes.json();
+        console.log('📋 Menu API Response:', menuData);
+
+        // 4. Save data to localStorage
+        localStorage.setItem('userData', JSON.stringify(user));      // store only user object
+        localStorage.setItem('menuData', JSON.stringify(menuData));  // menu info
+
+        // 5. Redirect to dashboard
+        router.push('/dashboard');
+      } else {
+        console.warn('❌ API did not return valid user data:', data);
+        alert('Login failed. Please check your username and password.');
+      }
+    } catch (err) {
+      console.error('Login Failed:', err);
+      alert('An unexpected error occurred. Please try again later.');
     }
-  } catch (err) {
-    console.error('Login Failed:', err);
-    alert('An unexpected error occurred. Please try again later.');
-  }
-};
-
+  };
 
   return (
     <div className="min-h-screen bg-[#f4f7fe] flex items-center justify-center p-4">
@@ -146,7 +146,7 @@ export default function Login() {
           {/* Sign In Button */}
           <button
             onClick={handleLogin}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-full text-sm font-medium mb-4"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white cursor-pointer py-3 rounded-full text-sm font-medium mb-4"
           >
             Sign In
           </button>
