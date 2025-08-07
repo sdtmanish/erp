@@ -1,10 +1,77 @@
-"use client";
+'use client';
 
 import Image from "next/image";
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-export default function ForgotPassword() {
 
-    const router = useRouter();
+export default function ForgotPassword() {
+  const [email, setEmail] = useState('');
+  const [userId, setUserId] = useState('');
+  const [userType, setUserType] = useState('');
+  const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState(''); // ✅ Added
+  const [userLoginName, setUserLoginName] = useState('');
+  const router = useRouter();
+
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem('userData');
+      if (storedUser) {
+        const user = JSON.parse(storedUser);
+        if (user?.UserCode && user?.UserType) {
+          setUserId(user.UserCode);
+          setUserType(user.UserType);
+          setUserLoginName(user.LoginName);
+        } else {
+          setMessage('User data is incomplete. Please log in again.');
+          setMessageType('error');
+        }
+      } else {
+        setMessage('User not logged in or session expired.');
+        setMessageType('error');
+      }
+    } catch (err) {
+      console.error('Error reading user data:', err);
+      setMessage('Error reading user data.');
+      setMessageType('error');
+    }
+  }, []);
+
+  const handleForgotPassword = async (e) => {
+  e.preventDefault();
+
+  try {
+    const fpResponse = await fetch('http://apidol.myportal.co.in/api/FP', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'APIKey': 'Sdt!@#321',
+      },
+      body: JSON.stringify({
+        LoginName: userLoginName,
+        UserType: userType,
+        Email: email,
+      }),
+    });
+
+    const result = await fpResponse.json();
+
+    if (result === "Not A Valid User") {
+      setMessage("Invalid email or user details. Please try again.");
+      setMessageType("error");
+    } else {
+      setMessage(result?.message || "Password reset link sent successfully.");
+      setMessageType("success");
+    }
+
+  } catch (err) {
+    console.error('Error during forgot password:', err);
+    setMessage('Something went wrong. Please try again.');
+    setMessageType('error');
+  }
+};
+
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f3f8ff] relative overflow-hidden px-4">
       {/* Background Shapes */}
@@ -32,19 +99,29 @@ export default function ForgotPassword() {
             Please enter the email address associated with your account and we’ll email you a link to reset your password.
           </p>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleForgotPassword}>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
               className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
+
+            {message && (
+              <p className={`text-sm text-center ${messageType === 'success' ? 'text-green-600' : 'text-red-600'}`}>
+                {message}
+              </p>
+            )}
+
             <button
               type="submit"
-              className="w-full bg-blue-600 cursor-pointer  hover:bg-blue-700 text-white py-3 rounded-lg transition duration-300"
+              className="w-full bg-blue-600 cursor-pointer hover:bg-blue-700 text-white py-3 rounded-lg transition duration-300"
             >
               Forgot Password
             </button>
+
             <button
               type="button"
               onClick={() => router.push('/login')}

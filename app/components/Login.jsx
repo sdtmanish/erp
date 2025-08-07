@@ -7,10 +7,13 @@ export default function Login() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
 
   const handleLogin = async () => {
+    setErrorMessage('');
+
     try {
-      // 1. Login API Call
       const res = await fetch('http://apidol.myportal.co.in/api/LoginUserWeb', {
         method: 'POST',
         headers: {
@@ -26,16 +29,13 @@ export default function Login() {
       const data = await res.json();
       console.log('🔑 Login API Response:', data);
 
-      // 2. Check for valid login response
       if (Array.isArray(data) && data.length > 0) {
-        const user = data[0]; // take only the first user
+        const user = data[0];
         const userId = user.UserCode;
         const userType = user.UserType;
         
-        console.log('✅ User ID:', userId || 'Not found');
-        console.log('✅ User Type:', userType || 'Not found');
+        
 
-        // 3. LeftMenu API Call using login data
         const menuRes = await fetch('http://apidol.myportal.co.in/api/LeftMenu', {
           method: 'POST',
           headers: {
@@ -49,28 +49,28 @@ export default function Login() {
         });
 
         const menuData = await menuRes.json();
-        console.log('📋 Menu API Response:', menuData);
 
-        // 4. Save data to localStorage
-        localStorage.setItem('userData', JSON.stringify(user));      // store only user object
-        localStorage.setItem('menuData', JSON.stringify(menuData));  // menu info
+        localStorage.setItem('userData', JSON.stringify(user));
+        localStorage.setItem('menuData', JSON.stringify(menuData));
 
-        // 5. Redirect to dashboard
         router.push('/dashboard');
       } else {
-        console.warn('❌ API did not return valid user data:', data);
-        alert('Login failed. Please check your username and password.');
+        setErrorMessage('Login failed. Please check your username and password.');
       }
     } catch (err) {
       console.error('Login Failed:', err);
-      alert('An unexpected error occurred. Please try again later.');
+      setErrorMessage('An unexpected error occurred. Please try again later.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-[#f4f7fe] flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-xl flex w-full max-w-5xl overflow-hidden">
-        
+    <div className="min-h-screen flex items-center justify-center bg-[#f4f7fe] relative overflow-hidden p-4">
+      {/* Background Shapes */}
+      <div className="absolute top-0 right-0 w-56 h-56 bg-[#6fd0ff] rounded-bl-[70%] opacity-30 z-0"></div>
+      <div className="absolute bottom-0 left-0 w-56 h-56 bg-[#ff8a65] rounded-tr-[70%] opacity-30 z-0"></div>
+
+      {/* Main Card */}
+      <div className="relative z-10 bg-white rounded-2xl shadow-xl flex w-full max-w-7xl overflow-hidden">
         {/* Left Illustration */}
         <div className="hidden md:flex flex-col items-center justify-center bg-white px-8 py-10 w-1/2">
           <Image
@@ -84,14 +84,13 @@ export default function Login() {
 
         {/* Right Login Form */}
         <div className="w-full md:w-1/2 bg-white px-8 py-10">
-          
           {/* Logo */}
           <div className="flex items-center gap-2 mb-6">
             <Image src="/assets/logo.png" alt="Logo" width={24} height={24} />
             <span className="text-xl font-semibold">Spike Admin</span>
           </div>
 
-          {/* Welcome */}
+          {/* Welcome Text */}
           <h2 className="text-2xl font-bold text-gray-800 mb-2">Welcome to Spike Admin</h2>
           <p className="text-sm text-gray-500 mb-6">Your Admin Dashboard</p>
 
@@ -150,6 +149,11 @@ export default function Login() {
           >
             Sign In
           </button>
+
+          {/* Error Message */}
+          {errorMessage && (
+            <p className="text-red-600 text-sm text-center mb-4">{errorMessage}</p>
+          )}
 
           {/* Create Account */}
           <p className="text-sm text-center text-gray-500">

@@ -1,5 +1,6 @@
 'use client';
 
+import {useRouter} from 'next/navigation';
 import { useEffect, useState } from 'react';
 import {
   FiChevronRight,
@@ -18,6 +19,13 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [expanded, setExpanded] = useState('');
   const [menuGroups, setMenuGroups] = useState({});
   const [isMobile, setIsMobile] = useState(false);
+
+  const router = useRouter();
+
+  const handleDashboardClick = () => {
+    // setActive('Dashboard');
+    router.push('/dashboard');
+  }
 
   // Hover animation
   const hoverSlideStyle = (start, end) => ({
@@ -94,8 +102,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       >
        {/* Sidebar Header */}
 {(!isMobile || isOpen) && (
-  <div className="p-4 pt-8 border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-50 flex items-center justify-between">
-    <div className="flex gap-2">
+  <div className="p-4 pt-8 cursor-pointer border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-50 flex items-center justify-between">
+    <div className="flex gap-2"
+    onClick={handleDashboardClick}
+    
+    >
       <img src="/assets/logo.png" className="w-6 h-6" alt="Logo" />
       {isOpen && (
         <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">
@@ -142,7 +153,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                   <div key={groupName}>
                     <button
                       onClick={() => setExpanded(isGroupOpen ? '' : groupName)}
-                      className={`relative w-full flex items-center px-4 py-3 text-sm font-semibold rounded-e-3xl transition 
+                      className={`relative w-full flex items-center px-4 py-3 text-md font-medium rounded-e-3xl transition 
                         ${isGroupOpen ? groupPalette.active : 'text-gray-700 dark:text-gray-200'}`}
                       style={
                         isGroupOpen
@@ -168,7 +179,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     {isOpen && (
                       <div
                         className={`transition-all duration-300 overflow-hidden ${
-                          isGroupOpen ? 'max-h-[9999px] mt-1' : 'max-h-0'
+                          isGroupOpen ? 'max-h-[9999px] mt-2' : 'max-h-0'
                         }`}
                       >
                         <div className="pl-4 pr-0 flex flex-col gap-2">
@@ -183,7 +194,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                                   setActive(item.WebModuleName);
                                   if (isMobile) setIsOpen(false);
                                 }}
-                                className={`flex items-center gap-2 px-4 py-2 cursor-pointer rounded-e-3xl transition-colors duration-200 
+                                className={`flex items-center gap-2 px-4 py-2  cursor-pointer rounded-e-3xl transition-colors duration-200 
                                   ${isActive ? palette.active : 'text-gray-700 dark:text-gray-200'}`}
                                 style={
                                   isActive
@@ -195,7 +206,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                               >
                                 {itemIcons[item.WebModuleName] || itemIcons.Default}
                                 {isOpen && (
-                                  <span className="relative z-10 text-sm truncate">
+                                  <span className="relative z-10 text-sm truncate ">
                                     {item.WebModuleName || 'Unnamed'}
                                   </span>
                                 )}

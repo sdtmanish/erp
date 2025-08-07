@@ -2,51 +2,57 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function ChangePassword() {
   const [userId, setUserId] = useState('');
   const [userType, setUserType] = useState('');
   const [oldPassword, setOldPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState(''); // NEW FIELD
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState('');
   const router = useRouter();
 
-  // Get userId and userType from localStorage when component mounts
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('userData');
-      console.log('🔍 Stored userData:', storedUser);
-
       if (storedUser) {
         const user = JSON.parse(storedUser);
-
         if (user?.UserCode && user?.UserType) {
           setUserId(user.UserCode);
           setUserType(user.UserType);
         } else {
           setMessage('User data is incomplete. Please log in again.');
+          setMessageType('error');
         }
       } else {
         setMessage('User not logged in or session expired.');
+        setMessageType('error');
       }
     } catch (err) {
-      console.error('Error reading localStorage:', err);
       setMessage('Could not read user information. Please log in again.');
+      setMessageType('error');
     }
   }, []);
 
   const handleChangePassword = async () => {
+    setMessage('');
+    setMessageType('');
+
     if (!oldPassword || !newPassword || !confirmPassword) {
       setMessage('Please fill all password fields.');
+      setMessageType('error');
       return;
     }
     if (newPassword !== confirmPassword) {
       setMessage('New password and confirm password do not match.');
+      setMessageType('error');
       return;
     }
     if (!userId || !userType) {
       setMessage('User information missing. Please log in again.');
+      setMessageType('error');
       return;
     }
 
@@ -66,97 +72,107 @@ export default function ChangePassword() {
       });
 
       const result = await response.json();
-      console.log('🔍 Password change response:', result);
-
-      // Handle string or object API response
       const msg = typeof result === 'string' ? result : result?.Message;
 
       if (msg) {
-        setMessage(msg.trim());
-
-        if (msg.toLowerCase().includes('success')) {
+        const trimmedMsg = msg.trim();
+        setMessage(trimmedMsg);
+        if (trimmedMsg.toLowerCase().includes('success')) {
+          setMessageType('success');
           setOldPassword('');
           setNewPassword('');
-          setConfirmPassword(''); // clear confirm password too
-
-          // OPTIONAL: redirect to home after 1.5s
+          setConfirmPassword('');
           setTimeout(() => router.push('/'), 1500);
+        } else {
+          setMessageType('error');
         }
       } else {
         setMessage('Password change failed. Please try again.');
+        setMessageType('error');
       }
     } catch (error) {
-      console.error('❌ Error changing password:', error);
       setMessage('An error occurred while changing the password.');
+      setMessageType('error');
     }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 bg-gray-50">
-      <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-200">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-6 text-center">
-          Change Password
-        </h2>
+    <div className="min-h-screen flex items-center justify-center bg-[#f3f8ff] relative px-4">
+      {/* Background Shapes */}
+      <div className="absolute top-0 right-0 w-56 h-56 bg-[#6fd0ff] rounded-bl-[70%] opacity-30 z-0"></div>
+      <div className="absolute bottom-0 left-0 w-56 h-56 bg-[#ff8a65] rounded-tr-[70%] opacity-30 z-0"></div>
 
-        <div className="space-y-5">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Old Password
-            </label>
+      {/* Main Card */}
+      <div className="relative z-0 bg-white rounded-2xl shadow-xl p-10 flex flex-col md:flex-row items-center gap-10 w-full max-w-5xl">
+        {/* Illustration */}
+        <div className="w-full md:w-1/2">
+          <Image
+            src="/assets/login-security.png"
+            alt="Security Illustration"
+            width={500}
+            height={500}
+            className="object-contain"
+            priority
+          />
+        </div>
+
+        {/* Form Section */}
+        <div className="w-full md:w-1/2">
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Change Password</h2>
+          <p className="text-gray-600 mb-6">
+            Update your password below. Make sure your new password is strong and secure.
+          </p>
+
+          <div className="space-y-4">
             <input
               type="password"
+              placeholder="Old Password"
               value={oldPassword}
               onChange={(e) => setOldPassword(e.target.value)}
-              placeholder="Enter your old password"
-              className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              New Password
-            </label>
             <input
               type="password"
+              placeholder="New Password"
               value={newPassword}
               onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Enter your new password"
-              className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
 
-          {/* Confirm New Password Field */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm New Password
-            </label>
             <input
               type="password"
+              placeholder="Confirm New Password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Re-enter your new password"
-              className="w-full px-4 py-2 border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
 
-          {message && (
-            <p
-              className={`text-sm text-center ${
-                message.toLowerCase().includes('success')
-                  ? 'text-green-600'
-                  : 'text-red-600'
-              }`}
+            {message && (
+              <p
+                className={`text-sm text-center ${
+                  messageType === 'success' ? 'text-green-600' : 'text-red-600'
+                }`}
+              >
+                {message}
+              </p>
+            )}
+
+            <button
+              onClick={handleChangePassword}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg transition duration-300"
             >
-              {message}
-            </p>
-          )}
+              Change Password
+            </button>
 
-          <button
-            onClick={handleChangePassword}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg transition duration-300"
-          >
-            Submit
-          </button>
+            <button
+              type="button"
+              onClick={() => router.push('/')}
+              className="w-full bg-blue-100 hover:bg-blue-200 text-blue-700 py-3 rounded-lg transition duration-300"
+            >
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>

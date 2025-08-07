@@ -2,14 +2,17 @@
 
 
 import DashboardWidgets from "../components/DashboardWidgets";
+import Employees from "../components/Employees";
 import Tiles from "../components/Tiles";
+import Welcome from "../components/Welcome";
 
 export default function DashboardPage() {
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-4">Welcome to Dashboard</h1>
+      <Welcome/>
       <Tiles/>
       <DashboardWidgets/>
+      <Employees/>
     
     </div>
   );
