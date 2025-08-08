@@ -181,17 +181,25 @@ export default function AcadmicQualifications() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
+        <div className="flex flex-row gap-2">
         <button
           className="px-4 py-2 bg-blue-600 rounded-lg text-white cursor-pointer hover:bg-blue-700"
           onClick={handleAddNew}
         >
           Add New
         </button>
+        <button
+          className="px-4 py-2 bg-red-700 rounded-lg text-white cursor-pointer hover:bg-red-800"
+          
+        >
+          Delete All
+        </button>
+        </div>
       </div>
 
       <div className="bg-white rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
         {/* Header Row */}
-        <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-300 mb-2 text-md font-medium px-4 py-4 ">
+        <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-300 mb-2 text-md font-medium px-4 py-5 ">
           <p>Qualification</p>
           <p>Type</p>
           <p>Level</p>
@@ -204,9 +212,13 @@ export default function AcadmicQualifications() {
           currentRows.map((item, index) => (
             <div
               key={index}
-              className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-300 mb-2 text-sm px-4 py-2"
+              className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-200 mb-2 text-sm px-4 py-3"
             >
-              <p>{item.acadqname}</p>
+               <div className="flex flex-row gap-2"> 
+                <input type="checkbox"/>
+                   <p>{item.acadqname}</p>
+               </div>
+           
               <p>{item.Remarks}</p>
               <p>{item.Preference}</p>
               <p>{item.Equalification}</p>
@@ -227,7 +239,7 @@ export default function AcadmicQualifications() {
         <div className="flex justify-between items-center mt-4 pb-4">
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
-            className="bg-blue-600 rounded text-white px-4 py-2 cursor-pointer hover:bg-blue-700 disabled:opacity-50"
+            className="bg-blue-600 rounded-lg text-white px-4 py-2 cursor-pointer hover:bg-blue-700 disabled:opacity-50"
             disabled={currentPage === 1}
           >
             Previous
@@ -239,7 +251,7 @@ export default function AcadmicQualifications() {
 
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
-            className="bg-blue-600 text-white rounded px-6 py-2 cursor-pointer hover:bg-blue-700 disabled:opacity-50"
+            className="bg-blue-600 text-white rounded-lg px-6 py-2 cursor-pointer hover:bg-blue-700 disabled:opacity-50"
             disabled={currentPage === totalPages}
           >
             Next
