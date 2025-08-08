@@ -214,8 +214,14 @@ export default function AcadmicQualifications() {
               key={index}
               className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-200 mb-2 text-sm px-4 py-3"
             >
-               <div className="flex flex-row gap-2"> 
-                <input type="checkbox"/>
+               <div className="flex flex-row gap-2 items-center"> 
+                <input type="checkbox" 
+                className="
+                      
+   w-4 h-4 
+    border border-gray-400 rounded "
+                
+                />
                    <p>{item.acadqname}</p>
                </div>
            
