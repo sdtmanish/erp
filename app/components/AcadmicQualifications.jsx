@@ -15,6 +15,7 @@ export default function AcadmicQualifications() {
     Equalification: '',
     Preference: ''
   });
+  const [errors, setErrors] = useState({});
 
   const rowsPerPage = 10;
 
@@ -75,6 +76,7 @@ export default function AcadmicQualifications() {
       Equalification: '',
       Preference: ''
     });
+    setErrors({});
   }
 
   const handleChange = (e) => {
@@ -82,10 +84,87 @@ export default function AcadmicQualifications() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
-  const handleSubmit = () => {
-    console.log('Form submitted:', formData);
-    setShowModal(false);
+  const validateForm = () => {
+    let newErrors = {};
+
+    if (!formData.acadqname.trim()) {
+      newErrors.acadqname = "Qualification Name is required";
+    }
+    if (!formData.Remarks.trim()) {
+      newErrors.Remarks = "Remarks are required";
+    }
+    if (!formData.Equalification.trim()) {
+      newErrors.Equalification = "Equivalent To is required";
+    }
+    if (!formData.Preference.trim()) {
+      newErrors.Preference = "Preference is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    try {
+      const res = await fetch('http://dolphinapi.myportal.co.in/api/AddAcademicQualification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'APIKey': 'Sdt!@#321'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!res.ok) {
+        throw new Error(`HTTP error! ${res.status}`);
+      }
+
+      setData((prev) => [...prev, formData]);
+      setFormData({
+        acadqname: '',
+        Remarks: '',
+        Equalification: '',
+        Preference: ''
+      });
+      setErrors({});
+      setShowModal(false);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
+
+  const handleDelete = async (acadq_code)=>{
+
+           try{
+
+            const deleteQualification = await fetch('http://dolphinapi.myportal.co.in/api/DelAcademicQualification',{
+                method:'POST',
+                headers:{
+                    'Content-Type':'application/json',
+                    'APIKey':'Sdt!@#321'
+                },
+                body:JSON.stringify({
+                   acadq_code
+                })
+            })
+            
+            
+      if (!deleteQualification.ok) {
+        throw new Error(`HTTP error! ${deleteQualification.status}`);
+      }
+           setData((prev) => prev.filter(item => item.acadq_code !== acadq_code));
+           }catch (err){
+            console.error(err)
+           }
+
   }
+
+
+
 
   return (
     <div className="bg-[#f3f8ff] p-20">
@@ -112,7 +191,7 @@ export default function AcadmicQualifications() {
 
       <div className="bg-white rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
         {/* Header Row */}
-        <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-300 mb-2 text-md font-medium px-4 py-3 ">
+        <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-300 mb-2 text-md font-medium px-4 py-4 ">
           <p>Qualification</p>
           <p>Type</p>
           <p>Level</p>
@@ -134,7 +213,7 @@ export default function AcadmicQualifications() {
 
               <div className="flex gap-4 justify-center">
                 <FaEye size={14} className="text-blue-600 cursor-pointer" />
-                <FaTrash size={14} className="text-red-700 cursor-pointer" />
+                <FaTrash size={14} className="text-red-700 cursor-pointer" onClick={()=> {handleDelete(item.acadq_code)}} />
               </div>
             </div>
           ))
@@ -180,36 +259,47 @@ export default function AcadmicQualifications() {
               <IoMdClose size={20} />
             </button>
 
+            {/* Qualification Name */}
             <input
               name="acadqname"
               value={formData.acadqname}
               onChange={handleChange}
               placeholder="Qualification Name"
-              className="w-full border border-gray-500 rounded-lg p-2 mb-3"
+              className={`w-full border rounded-lg p-2 mb-1 ${errors.acadqname ? 'border-red-500' : 'border-gray-500'}`}
             />
+            {errors.acadqname && <p className="text-red-500 text-sm mb-2">{errors.acadqname}</p>}
+
+            {/* Remarks */}
             <input
               name="Remarks"
               value={formData.Remarks}
               onChange={handleChange}
               placeholder="Remarks"
-              className="w-full border border-gray-500 rounded-lg p-2 mb-3"
+              className={`w-full border rounded-lg p-2 mb-1 ${errors.Remarks ? 'border-red-500' : 'border-gray-500'}`}
             />
+            {errors.Remarks && <p className="text-red-500 text-sm mb-2">{errors.Remarks}</p>}
+
+            {/* Equivalent To */}
             <input
               name="Equalification"
               value={formData.Equalification}
               onChange={handleChange}
               placeholder="Equivalent To"
-              className="w-full border border-gray-500 rounded-lg p-2 mb-3"
+              className={`w-full border rounded-lg p-2 mb-1 ${errors.Equalification ? 'border-red-500' : 'border-gray-500'}`}
             />
+            {errors.Equalification && <p className="text-red-500 text-sm mb-2">{errors.Equalification}</p>}
+
+            {/* Preference */}
             <input
               name="Preference"
               value={formData.Preference}
               onChange={handleChange}
               placeholder="Preference"
-              className="w-full border border-gray-500 rounded-lg p-2 mb-4"
+              className={`w-full border rounded-lg p-2 mb-1 ${errors.Preference ? 'border-red-500' : 'border-gray-500'}`}
             />
+            {errors.Preference && <p className="text-red-500 text-sm mb-2">{errors.Preference}</p>}
 
-            <div className="flex justify-end gap-2">
+            <div className="flex justify-end gap-2 mt-4">
               <button
                 onClick={handleSubmit}
                 className="px-8 py-2 bg-green-400 text-white rounded-4xl cursor-pointer hover:bg-green-500"
