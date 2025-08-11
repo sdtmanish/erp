@@ -3,63 +3,68 @@ import { useState, useEffect } from 'react'
 import { FaEye, FaTrash } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 import { IoMdClose } from 'react-icons/io'
-import { FaEdit } from "react-icons/fa";
+import { FaEdit } from 'react-icons/fa'
 
 export default function AcadmicQualifications() {
-  const [data, setData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showModal, setShowModal] = useState(false);
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [data, setData] = useState([])
+  const [currentPage, setCurrentPage] = useState(1)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [modalMode, setModalMode] = useState('add') // 'add', 'view', 'modify'
+  const [selectedQualification, setSelectedQualification] = useState(null)
+  const [selectedItems, setSelectedItems] = useState([])
   const [formData, setFormData] = useState({
     acadqname: '',
     Remarks: '',
     Equalification: '',
-    Preference: ''
-  });
-  const [errors, setErrors] = useState({});
+    Preference: '',
+  })
+  const [errors, setErrors] = useState({})
 
-  const rowsPerPage = 10;
+  const rowsPerPage = 10
 
-  const filterdData = data.filter((item) =>
-    item.acadqname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.Remarks?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filterdData = data.filter(
+    (item) =>
+      item.acadqname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      item.Remarks?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
   const sortedData = [...filterdData].sort((a, b) =>
-    a.acadqname.localeCompare(b.acadqname)
-  );
+    a.acadqname.localeCompare(b.acadqname),
+  )
 
-  const indexOfLastRow = currentPage * rowsPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = sortedData.slice(indexOfFirstRow, indexOfLastRow);
+  const indexOfLastRow = currentPage * rowsPerPage
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage
+  const currentRows = sortedData.slice(indexOfFirstRow, indexOfLastRow)
 
-  const totalPages = Math.ceil(data.length / rowsPerPage);
+  const totalPages = Math.ceil(data.length / rowsPerPage)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const academicQualifications = await fetch('http://dolphinapi.myportal.co.in/api/DisAcademicQualifications', {
-          method: 'POST',
-          headers: {
-            'APIKey': 'Sdt!@#321',
-            'Content-Type': 'application/json',
+        const academicQualifications = await fetch(
+          'http://dolphinapi.myportal.co.in/api/DisAcademicQualifications',
+          {
+            method: 'POST',
+            headers: {
+              APIKey: 'Sdt!@#321',
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({}),
           },
-          body: JSON.stringify({})
-        });
+        )
 
         if (!academicQualifications.ok) {
           throw new Error(`HTTP error! ${academicQualifications.status}`)
         }
 
-        const result = await academicQualifications.json();
-        setData(result);
-
+        const result = await academicQualifications.json()
+        setData(result)
       } catch (err) {
-        console.log(err);
+        console.log(err)
       }
     }
-    fetchData();
+    fetchData()
   }, [])
 
   useEffect(() => {
@@ -67,144 +72,201 @@ export default function AcadmicQualifications() {
   }, [searchTerm])
 
   const handleAddNew = () => {
-    setShowModal(true);
-  }
-
-  const handleCloseModal = () => {
-    setShowModal(false);
+    setModalMode('add')
+    setSelectedQualification(null)
     setFormData({
       acadqname: '',
       Remarks: '',
       Equalification: '',
-      Preference: ''
-    });
-    setErrors({});
+      Preference: '',
+    })
+    setErrors({})
+    setShowModal(true)
+  }
+
+  const handleView = (qualification) => {
+    setModalMode('view')
+    setSelectedQualification(qualification)
+    setFormData(qualification)
+    setShowModal(true)
+  }
+
+  const handleModify = (qualification) => {
+    setModalMode('modify')
+    setSelectedQualification(qualification)
+    setFormData(qualification)
+    setErrors({})
+    setShowModal(true)
+  }
+
+  const handleCloseModal = () => {
+    setShowModal(false)
+    setFormData({
+      acadqname: '',
+      Remarks: '',
+      Equalification: '',
+      Preference: '',
+    })
+    setErrors({})
+    setSelectedQualification(null)
   }
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
   const validateForm = () => {
     let newErrors = {};
 
     if (!formData.acadqname.trim()) {
-      newErrors.acadqname = "Qualification Name is required";
+        newErrors.acadqname = 'Qualification Name is required';
     }
     if (!formData.Remarks.trim()) {
-      newErrors.Remarks = "Remarks are required";
+        newErrors.Remarks = 'Remarks are required';
     }
     if (!formData.Equalification.trim()) {
-      newErrors.Equalification = "Equivalent To is required";
+        newErrors.Equalification = 'Equivalent To is required';
     }
-    if (!formData.Preference.trim()) {
-      newErrors.Preference = "Preference is required";
+    
+    // Corrected validation for Preference
+    if (formData.Preference === '' || isNaN(Number(formData.Preference))) {
+        newErrors.Preference = 'Preference is required and must be a number';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-  };
+};
 
-  const handleSubmit = async () => {
+const handleSubmit = async () => {
     if (!validateForm()) return;
 
     try {
-      const res = await fetch('http://dolphinapi.myportal.co.in/api/AddAcademicQualification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'APIKey': 'Sdt!@#321'
-        },
-        body: JSON.stringify(formData)
-      });
+        if (modalMode === 'add') {
+            // Your existing logic for adding a new qualification
+            const res = await fetch(
+                'http://dolphinapi.myportal.co.in/api/AddAcademicQualification',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        APIKey: 'Sdt!@#321',
+                    },
+                    body: JSON.stringify(formData),
+                },
+            );
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! ${res.status}`);
-      }
+            if (!res.ok) {
+                throw new Error(`HTTP error! ${res.status}`);
+            }
 
-      setData((prev) => [...prev, formData]);
-      setFormData({
-        acadqname: '',
-        Remarks: '',
-        Equalification: '',
-        Preference: ''
-      });
-      setErrors({});
-      setShowModal(false);
+            setData((prev) => [...prev, { ...formData, acadq_code: Date.now() }]);
+        } else if (modalMode === 'modify') {
+            const payload = {
+                acadq_code: selectedQualification.acadq_code,
+                acadqname: formData.acadqname,
+                Remarks: formData.Remarks,
+                OldValue: formData.acadqname,
+                Equalification: formData.Equalification,
+                Preference: Number(formData.Preference),
+            };
+
+            // Conditionally add the OldValue field only if acadqname was changed.
+          
+            const res = await fetch(
+                'http://dolphinapi.myportal.co.in/api/ModAcademicQualification',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        APIKey: 'Sdt!@#321',
+                    },
+                    body: JSON.stringify(payload),
+                },
+            );
+
+            if (!res.ok) {
+                throw new Error(`HTTP error! ${res.status}`);
+            }
+
+            setData((prev) =>
+                prev.map((item) =>
+                    item.acadq_code === selectedQualification.acadq_code
+                        ? { ...formData, acadq_code: selectedQualification.acadq_code }
+                        : item,
+                ),
+            );
+        }
+        handleCloseModal();
     } catch (err) {
-      console.error(err);
+        console.error(err);
     }
-  };
-
- const handleModify = async ()=>{
-
- }
-
-
-
+};
   const handleDelete = async (acadq_code) => {
-
     try {
-
-      const deleteQualification = await fetch('http://dolphinapi.myportal.co.in/api/DelAcademicQualification', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'APIKey': 'Sdt!@#321'
+      const deleteQualification = await fetch(
+        'http://dolphinapi.myportal.co.in/api/DelAcademicQualification',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            APIKey: 'Sdt!@#321',
+          },
+          body: JSON.stringify({
+            acadq_code,
+          }),
         },
-        body: JSON.stringify({
-          acadq_code
-        })
-      })
-
+      )
 
       if (!deleteQualification.ok) {
-        throw new Error(`HTTP error! ${deleteQualification.status}`);
+        throw new Error(`HTTP error! ${deleteQualification.status}`)
       }
-      setData((prev) => prev.filter(item => item.acadq_code !== acadq_code));
+      setData((prev) => prev.filter((item) => item.acadq_code !== acadq_code))
     } catch (err) {
       console.error(err)
     }
-
   }
 
   const handleDeleteSelected = async () => {
-    if(!selectedItems.length){
-      alert("please select at least one qualification to delete.");
-      return;
+    if (!selectedItems.length) {
+      alert('please select at least one qualification to delete.')
+      return
     }
 
-    if(!window.confirm(`Delete ${selectedItems.length} selected qualification(s)?`)) return;
+    if (!window.confirm(`Delete ${selectedItems.length} selected qualification(s)?`)) return
 
-    try{
+    try {
       //Delete each selected item
-      await Promise.all(selectedItems.map(code => handleDelete(code)));
-
-      
+      await Promise.all(selectedItems.map((code) => handleDelete(code)))
 
       //clear selection
-      setSelectedItems([]);
-
-    }catch(err){
-      console.error("Error deleting selected Qualification:",err);
+      setSelectedItems([])
+    } catch (err) {
+      console.error('Error deleting selected Qualification:', err)
     }
-
   }
 
-
+  const handleCheckboxChange = (acadq_code) => {
+    setSelectedItems((prev) =>
+      prev.includes(acadq_code)
+        ? prev.filter((code) => code !== acadq_code)
+        : [...prev, acadq_code],
+    )
+  }
 
   return (
     <div className="bg-[#f3f8ff] p-20">
-
       {/* Search Bar + Container Header */}
       <div className="flex justify-between items-center p-4 rounded-2xl shadow-xl backdrop-blur-lg bg-white h-26 ">
-        <div className='relative'>
-          <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+        <div className="relative">
+          <FiSearch
+            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+            size={18}
+          />
           <input
             type="text"
             placeholder="Search..."
-            className=" bg-white border border-gray-400 rounded-xl h-10 pl-9  text-md  focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className=" bg-white border border-gray-400 rounded-xl h-10 pl-9  text-md  focus:outline-none focus:ring-1 focus:ring-blue-500"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -220,7 +282,6 @@ export default function AcadmicQualifications() {
             className="px-4 py-2 bg-red-700 rounded-lg text-white cursor-pointer hover:bg-red-800"
             onClick={handleDeleteSelected}
             disabled={!selectedItems.length}
-
           >
             Delete All
           </button>
@@ -244,44 +305,47 @@ export default function AcadmicQualifications() {
               key={index}
               className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-200 mb-2 text-sm px-4 py-3"
             >
-             <div
-  key={item.acadq_code} // ✅ makes sure each checkbox is tracked separately
-  className="flex flex-row gap-2 items-center"
->
-  <input
-    type="checkbox"
-    className="w-4 h-4 border border-gray-400 rounded"
-    checked={selectedItems.includes(item.acadq_code)}
-    onChange={() => {
-      setSelectedItems((prev) =>
-        prev.includes(item.acadq_code)
-          ? prev.filter((code) => code !== item.acadq_code) // remove if already selected
-          : [...prev, item.acadq_code] // add if not selected
-      );
-    }}
-  />
-  <p>{item.acadqname}</p>
-</div>
+              <div
+                key={item.acadq_code} // ✅ makes sure each checkbox is tracked separately
+                className="flex flex-row gap-2 items-center"
+              >
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 border border-gray-400 rounded"
+                  checked={selectedItems.includes(item.acadq_code)}
+                  onChange={() => {
+                    handleCheckboxChange(item.acadq_code)
+                  }}
+                />
+                <p>{item.acadqname}</p>
+              </div>
               <p>{item.Remarks}</p>
               <p>{item.Preference}</p>
               <p>{item.Equalification}</p>
 
               <div className="flex gap-4 justify-center">
-                <FaEye size={14} 
-                className="text-blue-600 cursor-pointer"
-                onClick={handleModify}
-                
-
-                 />
-
-                <FaTrash size={14} className="text-red-700 cursor-pointer" onClick={() => { handleDelete(item.acadq_code) }} />
+                <FaEye
+                  size={14}
+                  className="text-blue-600 cursor-pointer"
+                  onClick={() => handleView(item)}
+                />
+                <FaEdit
+                  size={14}
+                  className="text-green-600 cursor-pointer"
+                  onClick={() => handleModify(item)}
+                />
+                <FaTrash
+                  size={14}
+                  className="text-red-700 cursor-pointer"
+                  onClick={() => {
+                    handleDelete(item.acadq_code)
+                  }}
+                />
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center py-6 text-gray-500 col-span-full">
-            No records found
-          </div>
+          <div className="text-center py-6 text-gray-500 col-span-full">No records found</div>
         )}
 
         {/* Pagination */}
@@ -312,7 +376,13 @@ export default function AcadmicQualifications() {
       {showModal && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 bg-opacity-50 z-50">
           <div className="bg-white rounded-2xl p-6 w-[400px] shadow-lg relative">
-            <h2 className="text-lg font-medium mb-4">Add Qualification</h2>
+            <h2 className="text-lg font-medium mb-4">
+              {modalMode === 'add'
+                ? 'Add Qualification'
+                : modalMode === 'view'
+                  ? 'View Qualification'
+                  : 'Modify Qualification'}
+            </h2>
             <button
               className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer"
               onClick={handleCloseModal}
@@ -326,7 +396,9 @@ export default function AcadmicQualifications() {
               value={formData.acadqname}
               onChange={handleChange}
               placeholder="Qualification Name"
-              className={`w-full border rounded-lg p-2 mb-1 ${errors.acadqname ? 'border-red-500' : 'border-gray-500'}`}
+              className={`w-full border rounded-lg p-2 mb-1 ${errors.acadqname ? 'border-red-500' : 'border-gray-500'
+                }`}
+              disabled={modalMode === 'view'}
             />
             {errors.acadqname && <p className="text-red-500 text-sm mb-2">{errors.acadqname}</p>}
 
@@ -336,7 +408,9 @@ export default function AcadmicQualifications() {
               value={formData.Remarks}
               onChange={handleChange}
               placeholder="Remarks"
-              className={`w-full border rounded-lg p-2 mb-1 ${errors.Remarks ? 'border-red-500' : 'border-gray-500'}`}
+              className={`w-full border rounded-lg p-2 mb-1 ${errors.Remarks ? 'border-red-500' : 'border-gray-500'
+                }`}
+              disabled={modalMode === 'view'}
             />
             {errors.Remarks && <p className="text-red-500 text-sm mb-2">{errors.Remarks}</p>}
 
@@ -346,9 +420,13 @@ export default function AcadmicQualifications() {
               value={formData.Equalification}
               onChange={handleChange}
               placeholder="Equivalent To"
-              className={`w-full border rounded-lg p-2 mb-1 ${errors.Equalification ? 'border-red-500' : 'border-gray-500'}`}
+              className={`w-full border rounded-lg p-2 mb-1 ${errors.Equalification ? 'border-red-500' : 'border-gray-500'
+                }`}
+              disabled={modalMode === 'view'}
             />
-            {errors.Equalification && <p className="text-red-500 text-sm mb-2">{errors.Equalification}</p>}
+            {errors.Equalification && (
+              <p className="text-red-500 text-sm mb-2">{errors.Equalification}</p>
+            )}
 
             {/* Preference */}
             <input
@@ -356,27 +434,31 @@ export default function AcadmicQualifications() {
               value={formData.Preference}
               onChange={handleChange}
               placeholder="Preference"
-              className={`w-full border rounded-lg p-2 mb-1 ${errors.Preference ? 'border-red-500' : 'border-gray-500'}`}
+              className={`w-full border rounded-lg p-2 mb-1 ${errors.Preference ? 'border-red-500' : 'border-gray-500'
+                }`}
+              disabled={modalMode === 'view'}
             />
             {errors.Preference && <p className="text-red-500 text-sm mb-2">{errors.Preference}</p>}
 
             <div className="flex justify-end gap-2 mt-4">
-              <button
-                onClick={handleSubmit}
-                className="px-8 py-2 bg-green-400 text-white rounded-4xl cursor-pointer hover:bg-green-500"
-              >
-                Add
-              </button>
+              {modalMode !== 'view' && (
+                <button
+                  onClick={handleSubmit}
+                  className="px-8 py-2 bg-green-400 text-white rounded-4xl cursor-pointer hover:bg-green-500"
+                >
+                  {modalMode === 'add' ? 'Add' : 'Update'}
+                </button>
+              )}
               <button
                 onClick={handleCloseModal}
                 className="px-4 py-2 bg-red-200 text-red-400 rounded-4xl cursor-pointer hover:bg-red-300 hover:text-white"
               >
-                Discard
+                {modalMode === 'view' ? 'Close' : 'Discard'}
               </button>
             </div>
           </div>
         </div>
       )}
     </div>
-  );
+  )
 }
