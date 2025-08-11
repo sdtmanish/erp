@@ -4,12 +4,16 @@ import { FaEye, FaTrash } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 import { IoMdClose } from 'react-icons/io'
 import { FaEdit } from 'react-icons/fa'
+import ConfirmModal from './popup/ConfirmModal'
+
 
 export default function AcadmicQualifications() {
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [searchTerm, setSearchTerm] = useState('')
+  const [selectedId, setSelectedId] = useState(null);
   const [showModal, setShowModal] = useState(false)
+   const [showConfirm, setShowConfirm] = useState(false);
   const [modalMode, setModalMode] = useState('add') // 'add', 'view', 'modify'
   const [selectedQualification, setSelectedQualification] = useState(null)
   const [selectedItems, setSelectedItems] = useState([])
@@ -120,88 +124,88 @@ export default function AcadmicQualifications() {
     let newErrors = {};
 
     if (!formData.acadqname.trim()) {
-        newErrors.acadqname = 'Qualification Name is required';
+      newErrors.acadqname = 'Qualification Name is required';
     }
     if (!formData.Remarks.trim()) {
-        newErrors.Remarks = 'Remarks are required';
+      newErrors.Remarks = 'Remarks are required';
     }
     if (!formData.Equalification.trim()) {
-        newErrors.Equalification = 'Equivalent To is required';
+      newErrors.Equalification = 'Equivalent To is required';
     }
-    
+
     // Corrected validation for Preference
     if (formData.Preference === '' || isNaN(Number(formData.Preference))) {
-        newErrors.Preference = 'Preference is required and must be a number';
+      newErrors.Preference = 'Preference is required and must be a number';
     }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
-};
+  };
 
-const handleSubmit = async () => {
+  const handleSubmit = async () => {
     if (!validateForm()) return;
 
     try {
-        if (modalMode === 'add') {
-            // Your existing logic for adding a new qualification
-            const res = await fetch(
-                'http://dolphinapi.myportal.co.in/api/AddAcademicQualification',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        APIKey: 'Sdt!@#321',
-                    },
-                    body: JSON.stringify(formData),
-                },
-            );
+      if (modalMode === 'add') {
+        // Your existing logic for adding a new qualification
+        const res = await fetch(
+          'http://dolphinapi.myportal.co.in/api/AddAcademicQualification',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              APIKey: 'Sdt!@#321',
+            },
+            body: JSON.stringify(formData),
+          },
+        );
 
-            if (!res.ok) {
-                throw new Error(`HTTP error! ${res.status}`);
-            }
-
-            setData((prev) => [...prev, { ...formData, acadq_code: Date.now() }]);
-        } else if (modalMode === 'modify') {
-            const payload = {
-                acadq_code: selectedQualification.acadq_code,
-                acadqname: formData.acadqname,
-                Remarks: formData.Remarks,
-                OldValue: formData.acadqname,
-                Equalification: formData.Equalification,
-                Preference: Number(formData.Preference),
-            };
-
-            // Conditionally add the OldValue field only if acadqname was changed.
-          
-            const res = await fetch(
-                'http://dolphinapi.myportal.co.in/api/ModAcademicQualification',
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        APIKey: 'Sdt!@#321',
-                    },
-                    body: JSON.stringify(payload),
-                },
-            );
-
-            if (!res.ok) {
-                throw new Error(`HTTP error! ${res.status}`);
-            }
-
-            setData((prev) =>
-                prev.map((item) =>
-                    item.acadq_code === selectedQualification.acadq_code
-                        ? { ...formData, acadq_code: selectedQualification.acadq_code }
-                        : item,
-                ),
-            );
+        if (!res.ok) {
+          throw new Error(`HTTP error! ${res.status}`);
         }
-        handleCloseModal();
+
+        setData((prev) => [...prev, { ...formData, acadq_code: Date.now() }]);
+      } else if (modalMode === 'modify') {
+        const payload = {
+          acadq_code: selectedQualification.acadq_code,
+          acadqname: formData.acadqname,
+          Remarks: formData.Remarks,
+          OldValue: formData.acadqname,
+          Equalification: formData.Equalification,
+          Preference: Number(formData.Preference),
+        };
+
+        // Conditionally add the OldValue field only if acadqname was changed.
+
+        const res = await fetch(
+          'http://dolphinapi.myportal.co.in/api/ModAcademicQualification',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              APIKey: 'Sdt!@#321',
+            },
+            body: JSON.stringify(payload),
+          },
+        );
+
+        if (!res.ok) {
+          throw new Error(`HTTP error! ${res.status}`);
+        }
+
+        setData((prev) =>
+          prev.map((item) =>
+            item.acadq_code === selectedQualification.acadq_code
+              ? { ...formData, acadq_code: selectedQualification.acadq_code }
+              : item,
+          ),
+        );
+      }
+      handleCloseModal();
     } catch (err) {
-        console.error(err);
+      console.error(err);
     }
-};
+  };
   const handleDelete = async (acadq_code) => {
     try {
       const deleteQualification = await fetch(
@@ -255,7 +259,7 @@ const handleSubmit = async () => {
   }
 
   return (
-    <div className="bg-[#f3f8ff] p-20">
+    <div className="bg-[#f3f8ff] p-2 w-[96%]  max-w-[1600px] mx-auto md:w-[90%]  ">
       {/* Search Bar + Container Header */}
       <div className="flex justify-between items-center p-4 rounded-2xl shadow-xl backdrop-blur-lg bg-white h-26 ">
         <div className="relative">
@@ -290,7 +294,9 @@ const handleSubmit = async () => {
 
       <div className="bg-white rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
         {/* Header Row */}
-        <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-300 mb-2 text-md font-medium px-4 py-5 ">
+        <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem]
+        sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] lg:text-base
+         items-center justify-between border-b border-gray-300 mb-2 text-sm font-medium px-4 py-5  ">
           <p>Qualification</p>
           <p>Type</p>
           <p>Level</p>
@@ -299,54 +305,76 @@ const handleSubmit = async () => {
         </div>
 
         {/* Data Rows */}
-        {currentRows.length > 0 ? (
-          currentRows.map((item, index) => (
-            <div
-              key={index}
-              className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-200 mb-2 text-sm px-4 py-3"
-            >
-              <div
-                key={item.acadq_code} // ✅ makes sure each checkbox is tracked separately
-                className="flex flex-row gap-2 items-center"
-              >
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 border border-gray-400 rounded"
-                  checked={selectedItems.includes(item.acadq_code)}
-                  onChange={() => {
-                    handleCheckboxChange(item.acadq_code)
-                  }}
-                />
-                <p>{item.acadqname}</p>
-              </div>
-              <p>{item.Remarks}</p>
-              <p>{item.Preference}</p>
-              <p>{item.Equalification}</p>
+       {/* // State at top of your component */}
 
-              <div className="flex gap-4 justify-center">
-                <FaEye
-                  size={14}
-                  className="text-blue-600 cursor-pointer"
-                  onClick={() => handleView(item)}
-                />
-                <FaEdit
-                  size={14}
-                  className="text-green-600 cursor-pointer"
-                  onClick={() => handleModify(item)}
-                />
-                <FaTrash
-                  size={14}
-                  className="text-red-700 cursor-pointer"
-                  onClick={() => {
-                    handleDelete(item.acadq_code)
-                  }}
-                />
-              </div>
-            </div>
-          ))
-        ) : (
-          <div className="text-center py-6 text-gray-500 col-span-full">No records found</div>
-        )}
+
+
+{currentRows.length > 0 ? (
+  currentRows.map((item, index) => (
+    <div
+      key={index}
+      className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] 
+      sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] lg:text-sm
+      items-center justify-between border-b border-gray-200 mb-2 text-xs px-4 py-3 "
+    >
+      <div
+        key={item.acadq_code}
+        className="flex flex-row gap-2 items-center"
+      >
+        <input
+          type="checkbox"
+          className="w-4 h-4 border border-gray-400 rounded"
+          checked={selectedItems.includes(item.acadq_code)}
+          onChange={() => {
+            handleCheckboxChange(item.acadq_code);
+          }}
+        />
+        <p>{item.acadqname}</p>
+      </div>
+      <p>{item.Remarks}</p>
+      <p>{item.Preference}</p>
+      <p>{item.Equalification}</p>
+
+      <div className="flex gap-4 justify-center">
+        <FaEye
+          size={14}
+          className="text-blue-600 cursor-pointer"
+          onClick={() => handleView(item)}
+        />
+        <FaEdit
+          size={14}
+          className="text-green-600 cursor-pointer"
+          onClick={() => handleModify(item)}
+        />
+        <FaTrash
+          size={14}
+          className="text-red-700 cursor-pointer"
+          onClick={() => {
+            setSelectedId(item.acadq_code); // ✅ store ID before opening modal
+            setShowConfirm(true);
+          }}
+        />
+      </div>
+    </div>
+  ))
+) : (
+  <div className="text-center py-6 text-gray-500 col-span-full">
+    No records found
+  </div>
+)}
+
+{/* Confirm Modal - only render once, outside the map */}
+<ConfirmModal
+  isOpen={showConfirm}
+  title="Delete Row"
+  message="Are you sure you want to delete this row?"
+  onCancel={() => setShowConfirm(false)}
+  onConfirm={() => {
+    handleDelete(selectedId); // ✅ deletes correct row
+    setShowConfirm(false);
+  }}
+/>
+
 
         {/* Pagination */}
         <div className="flex justify-between items-center mt-4 pb-4">
@@ -373,92 +401,119 @@ const handleSubmit = async () => {
       </div>
 
       {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 bg-opacity-50 z-50">
-          <div className="bg-white rounded-2xl p-6 w-[400px] shadow-lg relative">
-            <h2 className="text-lg font-medium mb-4">
-              {modalMode === 'add'
-                ? 'Add Qualification'
-                : modalMode === 'view'
-                  ? 'View Qualification'
-                  : 'Modify Qualification'}
-            </h2>
-            <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer"
-              onClick={handleCloseModal}
-            >
-              <IoMdClose size={20} />
-            </button>
+     {showModal && (
+  <div className="fixed inset-0 flex items-center justify-center bg-black/50 bg-opacity-50 z-50">
+    <div className="bg-white rounded-2xl p-6 w-[400px] shadow-lg relative">
+      <h2 className="text-lg font-medium mb-4">
+        {modalMode === 'add'
+          ? 'Add Qualification'
+          : modalMode === 'view'
+          ? 'View Qualification'
+          : 'Modify Qualification'}
+      </h2>
+      <button
+        className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer"
+        onClick={handleCloseModal}
+      >
+        <IoMdClose size={20} />
+      </button>
 
-            {/* Qualification Name */}
-            <input
-              name="acadqname"
-              value={formData.acadqname}
-              onChange={handleChange}
-              placeholder="Qualification Name"
-              className={`w-full border rounded-lg p-2 mb-1 ${errors.acadqname ? 'border-red-500' : 'border-gray-500'
-                }`}
-              disabled={modalMode === 'view'}
-            />
-            {errors.acadqname && <p className="text-red-500 text-sm mb-2">{errors.acadqname}</p>}
-
-            {/* Remarks */}
-            <input
-              name="Remarks"
-              value={formData.Remarks}
-              onChange={handleChange}
-              placeholder="Remarks"
-              className={`w-full border rounded-lg p-2 mb-1 ${errors.Remarks ? 'border-red-500' : 'border-gray-500'
-                }`}
-              disabled={modalMode === 'view'}
-            />
-            {errors.Remarks && <p className="text-red-500 text-sm mb-2">{errors.Remarks}</p>}
-
-            {/* Equivalent To */}
-            <input
-              name="Equalification"
-              value={formData.Equalification}
-              onChange={handleChange}
-              placeholder="Equivalent To"
-              className={`w-full border rounded-lg p-2 mb-1 ${errors.Equalification ? 'border-red-500' : 'border-gray-500'
-                }`}
-              disabled={modalMode === 'view'}
-            />
-            {errors.Equalification && (
-              <p className="text-red-500 text-sm mb-2">{errors.Equalification}</p>
-            )}
-
-            {/* Preference */}
-            <input
-              name="Preference"
-              value={formData.Preference}
-              onChange={handleChange}
-              placeholder="Preference"
-              className={`w-full border rounded-lg p-2 mb-1 ${errors.Preference ? 'border-red-500' : 'border-gray-500'
-                }`}
-              disabled={modalMode === 'view'}
-            />
-            {errors.Preference && <p className="text-red-500 text-sm mb-2">{errors.Preference}</p>}
-
-            <div className="flex justify-end gap-2 mt-4">
-              {modalMode !== 'view' && (
-                <button
-                  onClick={handleSubmit}
-                  className="px-8 py-2 bg-green-400 text-white rounded-4xl cursor-pointer hover:bg-green-500"
-                >
-                  {modalMode === 'add' ? 'Add' : 'Update'}
-                </button>
-              )}
-              <button
-                onClick={handleCloseModal}
-                className="px-4 py-2 bg-red-200 text-red-400 rounded-4xl cursor-pointer hover:bg-red-300 hover:text-white"
-              >
-                {modalMode === 'view' ? 'Close' : 'Discard'}
-              </button>
-            </div>
-          </div>
-        </div>
+      {/* Qualification Name */}
+      <label htmlFor="acadqname" className="block text-sm font-medium mb-1">
+        Qualification Name
+      </label>
+      <input
+        id="acadqname"
+        name="acadqname"
+        value={formData.acadqname}
+        onChange={handleChange}
+        placeholder="Qualification Name"
+        className={`w-full focus:outline-none focus:border-blue-300 border rounded-lg p-2 mb-1 ${
+          errors.Preference ? 'border-red-500' : 'border-gray-500'
+        }`}
+        disabled={modalMode === 'view'}
+      />
+      {errors.acadqname && (
+        <p className="text-red-500 text-sm mb-2">{errors.acadqname}</p>
       )}
+
+      {/* Remarks */}
+      <label htmlFor="Remarks" className="block text-sm font-medium mb-1">
+        Remarks
+      </label>
+      <input
+        id="Remarks"
+        name="Remarks"
+        value={formData.Remarks}
+        onChange={handleChange}
+        placeholder="Remarks"
+        className={`w-full focus:outline-none focus:border-blue-300 border rounded-lg p-2 mb-1 ${
+          errors.Preference ? 'border-red-500' : 'border-gray-500'
+        }`}
+        disabled={modalMode === 'view'}
+      />
+      {errors.Remarks && (
+        <p className="text-red-500 text-sm mb-2">{errors.Remarks}</p>
+      )}
+
+      {/* Equivalent To */}
+      <label htmlFor="Equalification" className="block text-sm font-medium mb-1">
+        Equivalent To
+      </label>
+      <input
+        id="Equalification"
+        name="Equalification"
+        value={formData.Equalification}
+        onChange={handleChange}
+        placeholder="Equivalent To"
+        className={`w-full focus:outline-none focus:border-blue-300 border rounded-lg p-2 mb-1 ${
+          errors.Preference ? 'border-red-500' : 'border-gray-500'
+        }`}
+        disabled={modalMode === 'view'}
+      />
+      {errors.Equalification && (
+        <p className="text-red-500 text-sm mb-2">{errors.Equalification}</p>
+      )}
+
+      {/* Preference */}
+      <label htmlFor="Preference" className="block text-sm font-medium mb-1">
+        Preference
+      </label>
+      <input
+        id="Preference"
+        name="Preference"
+        value={formData.Preference}
+        onChange={handleChange}
+        placeholder="Preference"
+        className={`w-full focus:outline-none focus:border-blue-300 border rounded-lg p-2 mb-1 ${
+          errors.Preference ? 'border-red-500' : 'border-gray-500'
+        }`}
+        disabled={modalMode === 'view'}
+      />
+      {errors.Preference && (
+        <p className="text-red-500 text-sm mb-2">{errors.Preference}</p>
+      )}
+
+      <div className="flex justify-end gap-2 mt-4">
+        {modalMode !== 'view' && (
+          <button
+            onClick={handleSubmit}
+            className="px-8 py-2 bg-green-400 text-white rounded-4xl cursor-pointer hover:bg-green-500"
+          >
+            {modalMode === 'add' ? 'Add' : 'Update'}
+          </button>
+        )}
+        <button
+          onClick={handleCloseModal}
+          className="px-4 py-2 bg-red-200 text-red-400 rounded-4xl cursor-pointer hover:bg-red-300 hover:text-white"
+        >
+          {modalMode === 'view' ? 'Close' : 'Discard'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   )
 }

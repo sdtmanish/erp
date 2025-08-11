@@ -29,7 +29,6 @@ export default function Welcome() {
 
   const handleClick = () => {
     try {
-      // Dummy example of success message
       setMessage('Redirecting to dashboard...');
       setError('');
     } catch (err) {
@@ -39,29 +38,24 @@ export default function Welcome() {
   };
 
   return (
-    <div className="ml-4 flex flex-row justify-between items-center bg-[#f3f8ff]  pl-2 pr-8 mx-auto ">
+    <div className="flex flex-col lg:flex-row w-[96%] md:w-[90%] max-w-[1600px] mx-auto gap-4 justify-between items-start bg-[#f3f8ff] p-2">
+      
       {/* Welcome Card */}
-      <div className="bg-white rounded-2xl shadow-md p-6 flex items-center justify-between max-w-xl mb-2 mt-1">
-        <div className="space-y-2">
+      <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col sm:flex-row items-center sm:items-start justify-between w-full lg:max-w-xl mb-2 mt-1">
+        <div className="space-y-2 flex-1 text-center sm:text-left">
           <h2 className="text-lg font-medium text-gray-900">Welcome {name}</h2>
-          <p className="text-sm text-gray-500">Check All The Statastics</p>
+          <p className="text-sm text-gray-500">Check All The Statistics</p>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2 rounded-full"
             onClick={handleClick}
           >
             Visit Now
           </button>
-
-          {/* Inline Message */}
-          {message && (
-            <p className="text-green-600 text-sm mt-1">{message}</p>
-          )}
-          {error && (
-            <p className="text-red-600 text-sm mt-1">{error}</p>
-          )}
+          {message && <p className="text-green-600 text-sm mt-1">{message}</p>}
+          {error && <p className="text-red-600 text-sm mt-1">{error}</p>}
         </div>
 
-        <div className="w-1/2 max-w-[180px]">
+        <div className="w-[120px] sm:w-[150px] md:w-[180px] mt-4 sm:mt-0">
           <Image
             src="/assets/welcome.png"
             alt="Welcome illustration"
@@ -73,7 +67,7 @@ export default function Welcome() {
       </div>
 
       {/* Stat Boxes */}
-      <div className="flex flex-wrap gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full lg:w-auto">
         <StatCard
           icon={<PiShoppingCart className="text-white text-2xl" />}
           value="2358"
@@ -95,32 +89,16 @@ export default function Welcome() {
           change="-3%"
           color="from-cyan-400 to-blue-400"
         />
-        <StatCard
-          icon={<PiCurrencyDollar className="text-white text-2xl" />}
-          value="$235.8K"
-          label="Earnings"
-          change="-3%"
-          color="from-cyan-400 to-blue-400"
-        />
-        <StatCard
-          icon={<PiCurrencyDollar className="text-white text-2xl" />}
-          value="$235.8K"
-          label="Earnings"
-          change="-3%"
-          color="from-cyan-400 to-blue-400"
-        />
       </div>
     </div>
   );
 }
 
-// Stat Box Component
+// Stat Card Component
 function StatCard({ icon, value, label, change, color }) {
   return (
     <div
-      className="w-[200px] h-[158px] bg-white rounded-xl bg-gradient-to-tr shadow-md p-4 text-black flex flex-col justify-between"
-      style={{ backgroundImage: `linear-gradient(to top right, var(--tw-gradient-stops))` }}
-      data-color={color}
+      className={`min-w-[150px] bg-white rounded-xl shadow-md p-4 text-black flex flex-col justify-between`}
     >
       <div className="flex justify-between items-start">
         {icon}

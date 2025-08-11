@@ -47,7 +47,7 @@ export default function Tiles() {
   ];
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-6 p-6 bg-[#f5f7fa]">
+    <div className="grid grid-cols-3  w-[96%] md:w-[90%] max-w-[1600px] mx-auto sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-6 p-2 bg-[#f5f7fa]">
       {tiles.map((tile, index) => {
         const theme = tileThemes[index % tileThemes.length];
         return (

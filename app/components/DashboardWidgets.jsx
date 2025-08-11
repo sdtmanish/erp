@@ -54,7 +54,7 @@ const ordersData = [
 const CustomTooltip = ({ active, payload }) => {
   if (active && payload && payload.length) {
     return (
-      <div className="bg-white/90 p-2 shadow-md rounded-lg text-gray-800 text-sm border border-gray-100">
+      <div className="bg-white/90 w-[96%] md:w-[90%] max-w-[1600px] mx-auto p-2 shadow-md rounded-lg text-gray-800 text-sm border border-gray-100">
         <p>{payload[0].name}</p>
         {payload.map((item, i) => (
           <p key={i} style={{ color: item.stroke || '#111' }}>
@@ -73,7 +73,7 @@ export default function DashboardWidgets() {
   const [filter] = useState('This Week');
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 bg-gradient-to-br from-[#f8f9fc] to-[#eef2ff] h-full">
+    <div className="grid grid-cols-1  w-[96%] md:w-[90%] max-w-[1600px] mx-auto lg:grid-cols-3 gap-6 p-2 bg-gradient-to-br from-[#f8f9fc] to-[#eef2ff] h-full">
       {/* Earnings Widget */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
