@@ -3,12 +3,14 @@ import { useState, useEffect } from 'react'
 import { FaEye, FaTrash } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 import { IoMdClose } from 'react-icons/io'
+import { FaEdit } from "react-icons/fa";
 
 export default function AcadmicQualifications() {
   const [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
+  const [selectedItems, setSelectedItems] = useState([]);
   const [formData, setFormData] = useState({
     acadqname: '',
     Remarks: '',
@@ -135,34 +137,60 @@ export default function AcadmicQualifications() {
     }
   };
 
+ const handleModify = async ()=>{
+
+ }
 
 
-  const handleDelete = async (acadq_code)=>{
 
-           try{
+  const handleDelete = async (acadq_code) => {
 
-            const deleteQualification = await fetch('http://dolphinapi.myportal.co.in/api/DelAcademicQualification',{
-                method:'POST',
-                headers:{
-                    'Content-Type':'application/json',
-                    'APIKey':'Sdt!@#321'
-                },
-                body:JSON.stringify({
-                   acadq_code
-                })
-            })
-            
-            
+    try {
+
+      const deleteQualification = await fetch('http://dolphinapi.myportal.co.in/api/DelAcademicQualification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'APIKey': 'Sdt!@#321'
+        },
+        body: JSON.stringify({
+          acadq_code
+        })
+      })
+
+
       if (!deleteQualification.ok) {
         throw new Error(`HTTP error! ${deleteQualification.status}`);
       }
-           setData((prev) => prev.filter(item => item.acadq_code !== acadq_code));
-           }catch (err){
-            console.error(err)
-           }
+      setData((prev) => prev.filter(item => item.acadq_code !== acadq_code));
+    } catch (err) {
+      console.error(err)
+    }
 
   }
 
+  const handleDeleteSelected = async () => {
+    if(!selectedItems.length){
+      alert("please select at least one qualification to delete.");
+      return;
+    }
+
+    if(!window.confirm(`Delete ${selectedItems.length} selected qualification(s)?`)) return;
+
+    try{
+      //Delete each selected item
+      await Promise.all(selectedItems.map(code => handleDelete(code)));
+
+      
+
+      //clear selection
+      setSelectedItems([]);
+
+    }catch(err){
+      console.error("Error deleting selected Qualification:",err);
+    }
+
+  }
 
 
 
@@ -182,18 +210,20 @@ export default function AcadmicQualifications() {
           />
         </div>
         <div className="flex flex-row gap-2">
-        <button
-          className="px-4 py-2 bg-blue-600 rounded-lg text-white cursor-pointer hover:bg-blue-700"
-          onClick={handleAddNew}
-        >
-          Add New
-        </button>
-        <button
-          className="px-4 py-2 bg-red-700 rounded-lg text-white cursor-pointer hover:bg-red-800"
-          
-        >
-          Delete All
-        </button>
+          <button
+            className="px-4 py-2 bg-blue-600 rounded-lg text-white cursor-pointer hover:bg-blue-700"
+            onClick={handleAddNew}
+          >
+            Add New
+          </button>
+          <button
+            className="px-4 py-2 bg-red-700 rounded-lg text-white cursor-pointer hover:bg-red-800"
+            onClick={handleDeleteSelected}
+            disabled={!selectedItems.length}
+
+          >
+            Delete All
+          </button>
         </div>
       </div>
 
@@ -214,24 +244,37 @@ export default function AcadmicQualifications() {
               key={index}
               className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between border-b border-gray-200 mb-2 text-sm px-4 py-3"
             >
-               <div className="flex flex-row gap-2 items-center"> 
-                <input type="checkbox" 
-                className="
-                      
-   w-4 h-4 
-    border border-gray-400 rounded "
-                
-                />
-                   <p>{item.acadqname}</p>
-               </div>
-           
+             <div
+  key={item.acadq_code} // ✅ makes sure each checkbox is tracked separately
+  className="flex flex-row gap-2 items-center"
+>
+  <input
+    type="checkbox"
+    className="w-4 h-4 border border-gray-400 rounded"
+    checked={selectedItems.includes(item.acadq_code)}
+    onChange={() => {
+      setSelectedItems((prev) =>
+        prev.includes(item.acadq_code)
+          ? prev.filter((code) => code !== item.acadq_code) // remove if already selected
+          : [...prev, item.acadq_code] // add if not selected
+      );
+    }}
+  />
+  <p>{item.acadqname}</p>
+</div>
               <p>{item.Remarks}</p>
               <p>{item.Preference}</p>
               <p>{item.Equalification}</p>
 
               <div className="flex gap-4 justify-center">
-                <FaEye size={14} className="text-blue-600 cursor-pointer" />
-                <FaTrash size={14} className="text-red-700 cursor-pointer" onClick={()=> {handleDelete(item.acadq_code)}} />
+                <FaEye size={14} 
+                className="text-blue-600 cursor-pointer"
+                onClick={handleModify}
+                
+
+                 />
+
+                <FaTrash size={14} className="text-red-700 cursor-pointer" onClick={() => { handleDelete(item.acadq_code) }} />
               </div>
             </div>
           ))
