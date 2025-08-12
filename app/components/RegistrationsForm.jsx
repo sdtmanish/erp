@@ -28,7 +28,7 @@ export default function RegistrationsForm() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white shadow rounded-md">
+    <div className="max-w-xl mx-auto p-6 shadow rounded-md">
       <h2 className="text-xl font-semibold mb-4">Student Registration Form</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">

@@ -64,7 +64,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f4f7fe] relative overflow-hidden p-4">
+    <div className="min-h-screen flex items-center justify-center  relative overflow-hidden p-4">
       {/* Background Shapes */}
       <div className="absolute top-0 right-0 w-56 h-56 bg-[#6fd0ff] rounded-bl-[70%] opacity-30 z-0"></div>
       <div className="absolute bottom-0 left-0 w-56 h-56 bg-[#ff8a65] rounded-tr-[70%] opacity-30 z-0"></div>

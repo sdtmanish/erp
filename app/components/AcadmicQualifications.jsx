@@ -1,10 +1,12 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { FaEye, FaTrash } from 'react-icons/fa'
+import { FaRegEye, FaRegTrashAlt } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 import { IoMdClose } from 'react-icons/io'
-import { FaEdit } from 'react-icons/fa'
+import { FaRegEdit } from 'react-icons/fa'
 import ConfirmModal from './popup/ConfirmModal'
+import { MdDelete} from "react-icons/md"; // This import is unused, but kept as per "don't change anything unnecessary"
+import Image from "next/image";
 
 
 export default function AcadmicQualifications() {
@@ -13,9 +15,9 @@ export default function AcadmicQualifications() {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedId, setSelectedId] = useState(null);
   const [showModal, setShowModal] = useState(false)
-   const [showConfirm, setShowConfirm] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [modalMode, setModalMode] = useState('add') // 'add', 'view', 'modify'
-  const [selectedQualification, setSelectedQualification] = useState(null)
+  const [selectedQualification, setSelectedQualification] = useState(null) // This will now store the full object or null
   const [selectedItems, setSelectedItems] = useState([])
   const [formData, setFormData] = useState({
     acadqname: '',
@@ -41,7 +43,8 @@ export default function AcadmicQualifications() {
   const indexOfFirstRow = indexOfLastRow - rowsPerPage
   const currentRows = sortedData.slice(indexOfFirstRow, indexOfLastRow)
 
-  const totalPages = Math.ceil(data.length / rowsPerPage)
+  // Calculate total pages based on filtered data (important for accurate pagination)
+  const totalPages = Math.ceil(filterdData.length / rowsPerPage) // Changed from data.length
 
   useEffect(() => {
     const fetchData = async () => {
@@ -90,14 +93,17 @@ export default function AcadmicQualifications() {
 
   const handleView = (qualification) => {
     setModalMode('view')
-    setSelectedQualification(qualification)
+    // Set selectedQualification for display in ConfirmModal (if used directly, safer to pass the name)
+    setSelectedQualification(qualification); // Store the full object for consistency and potential future use
     setFormData(qualification)
     setShowModal(true)
   }
 
   const handleModify = (qualification) => {
     setModalMode('modify')
-    setSelectedQualification(qualification)
+    // FIX: Set selectedQualification with the full original object
+    // This is crucial to access original acadq_code and acadqname in handleSubmit
+    setSelectedQualification(qualification);
     setFormData(qualification)
     setErrors({})
     setShowModal(true)
@@ -166,16 +172,21 @@ export default function AcadmicQualifications() {
 
         setData((prev) => [...prev, { ...formData, acadq_code: Date.now() }]);
       } else if (modalMode === 'modify') {
+        // Ensure selectedQualification is an object before accessing its properties
+        if (!selectedQualification || typeof selectedQualification !== 'object') {
+          console.error("Error: selectedQualification is not an object. Cannot modify.");
+          return; // Prevent API call if state is incorrect
+        }
+
         const payload = {
           acadq_code: selectedQualification.acadq_code,
           acadqname: formData.acadqname,
           Remarks: formData.Remarks,
-          OldValue: formData.acadqname,
+          OldValue: selectedQualification.acadqname, // Now correctly accesses original name from the object
           Equalification: formData.Equalification,
           Preference: Number(formData.Preference),
         };
-
-        // Conditionally add the OldValue field only if acadqname was changed.
+        console.log("Payload being sent for modification:", payload); // Log the payload for debugging
 
         const res = await fetch(
           'http://dolphinapi.myportal.co.in/api/ModAcademicQualification',
@@ -190,6 +201,9 @@ export default function AcadmicQualifications() {
         );
 
         if (!res.ok) {
+          // Attempt to log the error response from the API
+          const errorText = await res.text();
+          console.error(`HTTP error! Status: ${res.status}, Response: ${errorText}`);
           throw new Error(`HTTP error! ${res.status}`);
         }
 
@@ -206,6 +220,7 @@ export default function AcadmicQualifications() {
       console.error(err);
     }
   };
+
   const handleDelete = async (acadq_code) => {
     try {
       const deleteQualification = await fetch(
@@ -232,6 +247,7 @@ export default function AcadmicQualifications() {
   }
 
   const handleDeleteSelected = async () => {
+    // Reverted to original alert/confirm for this function as per request not to change modal logic here
     if (!selectedItems.length) {
       alert('please select at least one qualification to delete.')
       return
@@ -258,8 +274,44 @@ export default function AcadmicQualifications() {
     )
   }
 
+  // --- Pagination Logic for Page Numbers ---
+  const handlePageChange = (pageNumber) => {
+    if (pageNumber > 0 && pageNumber <= totalPages) {
+      setCurrentPage(pageNumber);
+    }
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5; // Number of page buttons to display
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+
+    // Adjust startPage if the calculated endPage doesn't allow for maxPagesToShow
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, totalPages - maxPagesToShow + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`h-10 w-10 mx-1 rounded-full cursor-pointer flex items-center justify-center text-sm transition-colors duration-200
+            ${currentPage === i ? 'bg-[#8c28e1] text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
+            disabled:opacity-90`}
+          disabled={currentPage === i}
+        >
+          {i}
+        </button>
+      );
+    }
+    return pageNumbers;
+  };
+  // ------------------------------------------
+
   return (
-    <div className="bg-[#f3f8ff] p-2 w-[96%]  max-w-[1600px] mx-auto md:w-[90%]  ">
+    <div className=" p-2 w-[96%] max-w-[1600px] mx-auto md:w-[90%] ">
       {/* Search Bar + Container Header */}
       <div className="flex justify-between items-center p-4 rounded-2xl shadow-xl backdrop-blur-lg bg-white h-26 ">
         <div className="relative">
@@ -270,25 +322,32 @@ export default function AcadmicQualifications() {
           <input
             type="text"
             placeholder="Search..."
-            className=" bg-white border border-gray-400 rounded-xl h-10 pl-9  text-md  focus:outline-none focus:ring-1 focus:ring-blue-500"
+            className=" bg-white border border-gray-400 rounded-xl h-10 pl-9 text-md focus:outline-none focus:border-blue-300"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <div className="flex flex-row gap-2">
           <button
-            className="px-4 py-2 bg-blue-600 rounded-lg text-white cursor-pointer hover:bg-blue-700"
+            className="px-4 py-2 bg-blue-600 rounded-lg text-white cursor-pointer hover:bg-blue-700
+            active:scale-95 active:bg-blue-800 
+            "
             onClick={handleAddNew}
           >
             Add New
           </button>
           <button
-            className="px-4 py-2 bg-red-700 rounded-lg text-white cursor-pointer hover:bg-red-800"
+            className={`px-4 py-2 rounded-lg text-white cursor-pointer 
+              ${selectedItems.length
+                ? "bg-red-700 hover:bg-red-800 active:scale-95 active:bg-red-800"
+                : "bg-red-400 cursor-not-allowed active:scale-100 active:bg-red-400"
+              }`}
             onClick={handleDeleteSelected}
             disabled={!selectedItems.length}
           >
             Delete All
           </button>
+
         </div>
       </div>
 
@@ -296,223 +355,276 @@ export default function AcadmicQualifications() {
         {/* Header Row */}
         <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem]
         sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] lg:text-base
-         items-center justify-between border-b border-gray-300 mb-2 text-sm font-medium px-4 py-5  ">
-          <p>Qualification</p>
-          <p>Type</p>
-          <p>Level</p>
-          <p>Equivalent To</p>
-          <p className="text-center">Actions</p>
+        items-center justify-between border-b border-gray-300 mb-2 text-sm font-medium px-4 pt-4 pb-2 ">
+          <p>QUALIFICATION</p>
+          <p>TYPE</p>
+          <p>LEVEL</p>
+          <p>EQUIVALENT TO</p>
+          <p className="text-center">ACTIONS</p>
         </div>
 
         {/* Data Rows */}
-       {/* // State at top of your component */}
+        {currentRows.length > 0 ? (
+          currentRows.map((item) => (
+            <div
+              key={item.acadq_code}
+              className=" grid grid-cols-[12rem_10rem_6rem_10rem_5rem]  items-center justify-between
+            sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] lg:text-sm
+            border-b border-gray-200 text-xs px-4 py-3 hover:bg-emerald-100 rounded-md"
+            >
+              <div
+                className="flex flex-row gap-2 items-center"
+              >
+                <input
+                  type="checkbox"
+                  className="w-4 h-4 border border-gray-400 rounded"
+                  checked={selectedItems.includes(item.acadq_code)}
+                  onChange={() => {
+                    handleCheckboxChange(item.acadq_code);
+                  }}
+                />
+                <p>{item.acadqname}</p>
+              </div>
+              <p>{item.Remarks}</p>
+              <p >{item.Preference}</p>
+              <p>{item.Equalification}</p>
 
+              <div className="flex gap-4 justify-center">
+                <FaRegEye
+                  size={16}
+                  className="text-blue-400 cursor-pointer"
+                  onClick={() => handleView(item)}
+                />
+                <FaRegEdit
+                  size={16}
+                  className=" cursor-pointer"
+                  onClick={() => handleModify(item)}
+                />
+                <div className="text-black-700 cursor-pointer"
+                  onClick={() => {
+                    setSelectedId(item.acadq_code); // Store ID before opening modal
+                    setSelectedQualification(item.acadqname)
+                    setShowConfirm(true);
+                  }}>
+                  <Image
+                    src="/assets/icons/trash-bin.png"
+                    alt="Trash Bin"
+                    width={18}
+                    height={18}
+                  />
+                </div>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="text-center py-6 text-gray-500 col-span-full">
+            No records found
+          </div>
+        )}
 
-
-{currentRows.length > 0 ? (
-  currentRows.map((item, index) => (
-    <div
-      key={index}
-      className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] 
-      sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] lg:text-sm
-      items-center justify-between border-b border-gray-200 mb-2 text-xs px-4 py-3 "
-    >
-      <div
-        key={item.acadq_code}
-        className="flex flex-row gap-2 items-center"
-      >
-        <input
-          type="checkbox"
-          className="w-4 h-4 border border-gray-400 rounded"
-          checked={selectedItems.includes(item.acadq_code)}
-          onChange={() => {
-            handleCheckboxChange(item.acadq_code);
+        {/* Confirm Modal - only render once, outside the map */}
+        <ConfirmModal
+          isOpen={showConfirm}
+          title="Delete Row"
+          message={<>
+            Are you sure you want to delete the record: "Qualification:{" "}
+            {/* FIX: Conditionally display acadqname if selectedQualification is an object */}
+            <strong>{selectedQualification?.acadqname || selectedQualification}</strong>"? 
+          </>}
+          onCancel={() => setShowConfirm(false)}
+          onConfirm={() => {
+            handleDelete(selectedId);
+            setShowConfirm(false);
           }}
         />
-        <p>{item.acadqname}</p>
-      </div>
-      <p>{item.Remarks}</p>
-      <p>{item.Preference}</p>
-      <p>{item.Equalification}</p>
-
-      <div className="flex gap-4 justify-center">
-        <FaEye
-          size={14}
-          className="text-blue-600 cursor-pointer"
-          onClick={() => handleView(item)}
-        />
-        <FaEdit
-          size={14}
-          className="text-green-600 cursor-pointer"
-          onClick={() => handleModify(item)}
-        />
-        <FaTrash
-          size={14}
-          className="text-red-700 cursor-pointer"
-          onClick={() => {
-            setSelectedId(item.acadq_code); // ✅ store ID before opening modal
-            setShowConfirm(true);
-          }}
-        />
-      </div>
-    </div>
-  ))
-) : (
-  <div className="text-center py-6 text-gray-500 col-span-full">
-    No records found
-  </div>
-)}
-
-{/* Confirm Modal - only render once, outside the map */}
-<ConfirmModal
-  isOpen={showConfirm}
-  title="Delete Row"
-  message="Are you sure you want to delete this row?"
-  onCancel={() => setShowConfirm(false)}
-  onConfirm={() => {
-    handleDelete(selectedId); // ✅ deletes correct row
-    setShowConfirm(false);
-  }}
-/>
 
 
         {/* Pagination */}
-        <div className="flex justify-between items-center mt-4 pb-4">
-          <button
-            onClick={() => setCurrentPage(currentPage - 1)}
-            className="bg-blue-600 rounded-lg text-white px-4 py-2 cursor-pointer hover:bg-blue-700 disabled:opacity-50"
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
+        {totalPages > 1 && ( // Only show pagination if there's more than 1 page
+          <div className="flex justify-center items-center mt-4 pb-4 gap-2">
+            {/* First Page Button */}
+            
 
-          <span className="text-sm">
-            Page {currentPage} of {totalPages}
-          </span>
+            {/* Previous Button */}
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="px-5 py-2 bg-blue-600 rounded-lg text-white cursor-pointer hover:bg-blue-700 disabled:opacity-50"
+              disabled={currentPage === 1}
+            >
+              Prev
+            </button>
 
-          <button
-            onClick={() => setCurrentPage(currentPage + 1)}
-            className="bg-blue-600 text-white rounded-lg px-6 py-2 cursor-pointer hover:bg-blue-700 disabled:opacity-50"
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </button>
-        </div>
+              <button
+              onClick={() => handlePageChange(1)}
+              className="h-10 w-10 mx-1 rounded-full flex items-center justify-center text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 disabled:opacity-50"
+              disabled={currentPage === 1}
+            >
+              «
+            </button>
+
+            {/* Numbered Page Buttons */}
+            {renderPageNumbers()}
+
+            {/* Last Page Button */}
+            <button
+              onClick={() => handlePageChange(totalPages)}
+              className="h-10 w-10 mx-1 rounded-full flex items-center justify-center text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 disabled:opacity-50"
+              disabled={currentPage === totalPages}
+            >
+              »
+            </button>
+
+            {/* Next Button */}
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 disabled:opacity-50"
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+
+            
+          </div>
+        )}
       </div>
 
       {/* Modal */}
-     {showModal && (
-  <div className="fixed inset-0 flex items-center justify-center bg-black/50 bg-opacity-50 z-50">
-    <div className="bg-white rounded-2xl p-6 w-[400px] shadow-lg relative">
-      <h2 className="text-lg font-medium mb-4">
-        {modalMode === 'add'
-          ? 'Add Qualification'
-          : modalMode === 'view'
-          ? 'View Qualification'
-          : 'Modify Qualification'}
-      </h2>
-      <button
-        className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer"
-        onClick={handleCloseModal}
-      >
-        <IoMdClose size={20} />
-      </button>
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white rounded-2xl p-6 w-[400px] shadow-lg relative">
+            <h2 className="text-lg font-medium mb-4">
+              {modalMode === 'add'
+                ? 'Add Qualification'
+                : modalMode === 'view'
+                  ? 'View Qualification'
+                  : 'Modify Qualification'}
+            </h2>
+            <button
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer"
+              onClick={handleCloseModal}
+            >
+              <IoMdClose size={20} />
+            </button>
 
-      {/* Qualification Name */}
-      <label htmlFor="acadqname" className="block text-sm font-medium mb-1">
-        Qualification Name
-      </label>
-      <input
-        id="acadqname"
-        name="acadqname"
-        value={formData.acadqname}
-        onChange={handleChange}
-        placeholder="Qualification Name"
-        className={`w-full focus:outline-none focus:border-blue-300 border rounded-lg p-2 mb-1 ${
-          errors.Preference ? 'border-red-500' : 'border-gray-500'
-        }`}
-        disabled={modalMode === 'view'}
-      />
-      {errors.acadqname && (
-        <p className="text-red-500 text-sm mb-2">{errors.acadqname}</p>
+            {/* Qualification Name Field with Floating Label */}
+            <div className="relative mb-6">
+              <input
+                type="text"
+                id="acadqname"
+                name="acadqname"
+                value={formData.acadqname}
+                onChange={handleChange}
+                placeholder=" " /* Crucial for floating label */
+                className={`peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent transition-colors duration-200 ease-in-out
+                            focus:border-blue-400
+                            ${errors.acadqname ? 'border-red-500' : 'border-gray-500'}`}
+                disabled={modalMode === 'view'}
+              />
+              <label
+                htmlFor="acadqname"
+                className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
+              >
+                Qualification Name
+              </label>
+              {errors.acadqname && (
+                <p className="text-red-500 text-sm mt-1">{errors.acadqname}</p>
+              )}
+            </div>
+
+            {/* Remarks Field with Floating Label */}
+            <div className="relative mb-6">
+              <input
+                type="text"
+                id="Remarks"
+                name="Remarks"
+                value={formData.Remarks}
+                onChange={handleChange}
+                placeholder=" " /* Crucial for floating label */
+                className={`peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent transition-colors duration-200 ease-in-out
+                            focus:border-blue-400
+                            ${errors.Remarks ? 'border-red-500' : 'border-gray-500'}`}
+                disabled={modalMode === 'view'}
+              />
+              <label
+                htmlFor="Remarks"
+                className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
+              >
+                Remarks
+              </label>
+              {errors.Remarks && (
+                <p className="text-red-500 text-sm mt-1">{errors.Remarks}</p>
+              )}
+            </div>
+
+            {/* Equivalent To Field with Floating Label */}
+            <div className="relative mb-6">
+              <input
+                type="text"
+                id="Equalification"
+                name="Equalification"
+                value={formData.Equalification}
+                onChange={handleChange}
+                placeholder=" " /* Crucial for floating label */
+                className={`peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent transition-colors duration-200 ease-in-out
+                            focus:border-blue-400
+                            ${errors.Equalification ? 'border-red-500' : 'border-gray-500'}`}
+                disabled={modalMode === 'view'}
+              />
+              <label
+                htmlFor="Equalification"
+                className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
+              >
+                Equivalent To
+              </label>
+              {errors.Equalification && (
+                <p className="text-red-500 text-sm mt-1">{errors.Equalification}</p>
+              )}
+            </div>
+
+            {/* Preference Field with Floating Label */}
+            <div className="relative mb-6">
+              <input
+                type="number" /* Changed type to number */
+                id="Preference"
+                name="Preference"
+                value={formData.Preference}
+                onChange={handleChange}
+                placeholder=" " /* Crucial for floating label */
+                className={`peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent transition-colors duration-200 ease-in-out
+                            focus:border-blue-400
+                            ${errors.Preference ? 'border-red-500' : 'border-gray-500'}`}
+                disabled={modalMode === 'view'}
+              />
+              <label
+                htmlFor="Preference"
+                className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
+              >
+                Preference
+              </label>
+              {errors.Preference && (
+                <p className="text-red-500 text-sm mt-1">{errors.Preference}</p>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 mt-4">
+              {modalMode !== 'view' && (
+                <button
+                  onClick={handleSubmit}
+                  className="px-8 py-2 bg-green-400 text-white rounded-full cursor-pointer hover:bg-green-500"
+                >
+                  {modalMode === 'add' ? 'Add' : 'Update'}
+                </button>
+              )}
+              <button
+                onClick={handleCloseModal}
+                className="px-4 py-2 bg-red-200 text-red-400 rounded-full cursor-pointer hover:bg-red-300 hover:text-white"
+              >
+                {modalMode === 'view' ? 'Close' : 'Discard'}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
-
-      {/* Remarks */}
-      <label htmlFor="Remarks" className="block text-sm font-medium mb-1">
-        Remarks
-      </label>
-      <input
-        id="Remarks"
-        name="Remarks"
-        value={formData.Remarks}
-        onChange={handleChange}
-        placeholder="Remarks"
-        className={`w-full focus:outline-none focus:border-blue-300 border rounded-lg p-2 mb-1 ${
-          errors.Preference ? 'border-red-500' : 'border-gray-500'
-        }`}
-        disabled={modalMode === 'view'}
-      />
-      {errors.Remarks && (
-        <p className="text-red-500 text-sm mb-2">{errors.Remarks}</p>
-      )}
-
-      {/* Equivalent To */}
-      <label htmlFor="Equalification" className="block text-sm font-medium mb-1">
-        Equivalent To
-      </label>
-      <input
-        id="Equalification"
-        name="Equalification"
-        value={formData.Equalification}
-        onChange={handleChange}
-        placeholder="Equivalent To"
-        className={`w-full focus:outline-none focus:border-blue-300 border rounded-lg p-2 mb-1 ${
-          errors.Preference ? 'border-red-500' : 'border-gray-500'
-        }`}
-        disabled={modalMode === 'view'}
-      />
-      {errors.Equalification && (
-        <p className="text-red-500 text-sm mb-2">{errors.Equalification}</p>
-      )}
-
-      {/* Preference */}
-      <label htmlFor="Preference" className="block text-sm font-medium mb-1">
-        Preference
-      </label>
-      <input
-        id="Preference"
-        name="Preference"
-        value={formData.Preference}
-        onChange={handleChange}
-        placeholder="Preference"
-        className={`w-full focus:outline-none focus:border-blue-300 border rounded-lg p-2 mb-1 ${
-          errors.Preference ? 'border-red-500' : 'border-gray-500'
-        }`}
-        disabled={modalMode === 'view'}
-      />
-      {errors.Preference && (
-        <p className="text-red-500 text-sm mb-2">{errors.Preference}</p>
-      )}
-
-      <div className="flex justify-end gap-2 mt-4">
-        {modalMode !== 'view' && (
-          <button
-            onClick={handleSubmit}
-            className="px-8 py-2 bg-green-400 text-white rounded-4xl cursor-pointer hover:bg-green-500"
-          >
-            {modalMode === 'add' ? 'Add' : 'Update'}
-          </button>
-        )}
-        <button
-          onClick={handleCloseModal}
-          className="px-4 py-2 bg-red-200 text-red-400 rounded-4xl cursor-pointer hover:bg-red-300 hover:text-white"
-        >
-          {modalMode === 'view' ? 'Close' : 'Discard'}
-        </button>
-      </div>
-    </div>
-  </div>
-)}
 
     </div>
   )

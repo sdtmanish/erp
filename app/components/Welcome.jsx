@@ -38,7 +38,7 @@ export default function Welcome() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row w-[96%] md:w-[90%] max-w-[1600px] mx-auto gap-4 justify-between items-start bg-[#f3f8ff] p-2">
+    <div className="flex flex-col lg:flex-row w-[96%] md:w-[90%] max-w-[1600px] mx-auto gap-4 justify-between items-start  p-2">
       
       {/* Welcome Card */}
       <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col sm:flex-row items-center sm:items-start justify-between w-full lg:max-w-xl mb-2 mt-1">

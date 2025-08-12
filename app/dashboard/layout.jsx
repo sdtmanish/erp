@@ -22,7 +22,7 @@ export default function DashboardLayout({ children }) {
         >
           <Header isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
           
-          <main className="flex-1  overflow-auto  bg-[#f3f8ff]">
+          <main className="flex-1  overflow-auto  ">
             {children}
           </main>
         </div>

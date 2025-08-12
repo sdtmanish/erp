@@ -131,34 +131,39 @@ export default function DashboardWidgets() {
       </motion.div>
 
       {/* Donut Chart Widget */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.1 }}
-        className="p-5 rounded-2xl shadow-xl bg-white/80 backdrop-blur-lg border border-gray-100 flex flex-col items-center"
-      >
-        <h2 className="text-lg font-semibold mb-4 text-gray-700">Sales by Category</h2>
-        <ResponsiveContainer width="100%" height={250}>
-          <PieChart>
-            <Pie
-              data={pieData}
-              dataKey="value"
-              nameKey="name"
-              cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={90}
-              paddingAngle={5}
-            >
-              {pieData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
-              ))}
-            </Pie>
-            <Tooltip content={<CustomTooltip />} />
-            <Legend verticalAlign="bottom" height={36} />
-          </PieChart>
-        </ResponsiveContainer>
-      </motion.div>
+      {/* Donut Chart Widget */}
+<motion.div
+  initial={{ opacity: 0, y: 20 }}
+  animate={{ opacity: 1, y: 0 }}
+  transition={{ duration: 0.6, delay: 0.1 }}
+  className="p-5 rounded-2xl shadow-xl bg-white/80 backdrop-blur-lg border border-gray-100 flex flex-col items-center"
+>
+  <h2 className="text-lg font-semibold mb-4 text-gray-700">Sales by Category</h2>
+  <ResponsiveContainer width="100%" height={250}>
+    <PieChart>
+  <Pie
+    data={pieData}
+    dataKey="value"
+    nameKey="name"
+    cx="50%"
+    cy="50%"
+    innerRadius={60}
+    outerRadius={90}
+    paddingAngle={5}
+    isAnimationActive={false}
+    activeShape={null}
+    cursor="default"
+  >
+    {pieData.map((entry, index) => (
+      <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
+    ))}
+  </Pie>
+  <Tooltip content={<CustomTooltip />} cursor={{ fill: 'transparent' }} />
+  <Legend verticalAlign="bottom" height={36} />
+</PieChart>
+  </ResponsiveContainer>
+</motion.div>
+
 
       {/* Total Orders Chart Widget */}
       <motion.div

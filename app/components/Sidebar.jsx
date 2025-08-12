@@ -97,12 +97,12 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   return (
     <>
       <aside
-        className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 shadow-md border-r border-blue-100 dark:border-gray-800 flex flex-col transition-all duration-300 z-40 rounded-none 
+        className={`fixed top-0 left-0 h-screen bg-white  shadow-md border-r border-blue-100  flex flex-col transition-all duration-300 z-40 rounded-none 
           ${isMobile ? (isOpen ? 'w-full' : 'w-0') : isOpen ? 'w-64' : 'w-16'}`}
       >
        {/* Sidebar Header */}
 {(!isMobile || isOpen) && (
-  <div className="p-4 pt-8 cursor-pointer border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 sticky top-0 z-50 flex items-center justify-between">
+  <div className="p-4 pt-8 cursor-pointer border-b border-gray-200  bg-white sticky top-0 z-50 flex items-center justify-between">
     <div className="flex gap-2"
     onClick={handleDashboardClick}
     
@@ -153,8 +153,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                   <div key={groupName}>
                     <button
                       onClick={() => setExpanded(isGroupOpen ? '' : groupName)}
-                      className={`relative w-full flex items-center px-4 py-3 text-md font-medium rounded-e-3xl transition 
-                        ${isGroupOpen ? groupPalette.active : 'text-gray-700 dark:text-gray-200'}`}
+                      className={`relative w-full flex items-center px-4 py-3 text-base font-normal rounded-e-3xl transition 
+                        ${isGroupOpen ? groupPalette.active : 'text-gray-900 dark:text-gray-200'}`}
                       style={
                         isGroupOpen
                           ? hoverSlideActiveStyle(groupPalette.start, groupPalette.end)
@@ -206,7 +206,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                               >
                                 {itemIcons[item.WebModuleName] || itemIcons.Default}
                                 {isOpen && (
-                                  <span className="relative z-10 text-sm truncate ">
+                                  <span className="relative z-10 text-base truncate ">
                                     {item.WebModuleName || 'Unnamed'}
                                   </span>
                                 )}

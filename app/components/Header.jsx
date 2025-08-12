@@ -19,7 +19,7 @@ export default function Header({ isOpen, setIsOpen }) {
   };
 
   return (
-    <div className="relative bg-[#f3f8ff] px-4 py-6">
+    <div className="relative  px-4 py-6">
       
       
 

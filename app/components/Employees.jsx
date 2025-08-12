@@ -40,7 +40,7 @@ const employees = [
 
 export default function TopEmployees() {
   return (
-    <section className="bg-[#f3f8ff]  w-[96%] md:w-[90%] max-w-[1600px] mx-auto py-4 px-2 md:px-2">
+    <section className=" w-[96%] md:w-[90%] max-w-[1600px] mx-auto py-4 px-2 md:px-2">
       <div className=" mx-auto space-y-2">
         {employees.map((emp, index) => (
           <div
