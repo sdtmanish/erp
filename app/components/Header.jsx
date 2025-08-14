@@ -24,7 +24,7 @@ export default function Header({ isOpen, setIsOpen }) {
       
 
       {/* Main Header Card */}
-      <header className="relative z-10 w-[96%] md:w-[90%] max-w-[1600px] bg-white shadow-xl rounded-2xl px-4 py-3 mx-auto transition-all duration-300">
+      <header className="relative z-10 w-[96%] md:w-[90%] max-w-[1600px] bg-primary shadow-xl rounded-2xl px-4 py-3 mx-auto transition-all duration-300">
         {/* Desktop Layout */}
         <div className="hidden xl:flex items-center justify-between w-full">
           {/* Left Section */}

@@ -5,13 +5,15 @@ import { FiSearch } from 'react-icons/fi'
 import { IoMdClose } from 'react-icons/io'
 import { FaRegEdit } from 'react-icons/fa'
 import ConfirmModal from './popup/ConfirmModal'
-import { MdDelete} from "react-icons/md"; // This import is unused, but kept as per "don't change anything unnecessary"
+import QualificationModal from './popup/QualificationModal'; // Adjust the path as needed
+import { MdDelete } from "react-icons/md"; // This import is unused, but kept as per "don't change anything unnecessary"
 import Image from "next/image";
 
 
 export default function AcadmicQualifications() {
   const [data, setData] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [sortOrder, setSortOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedId, setSelectedId] = useState(null);
   const [showModal, setShowModal] = useState(false)
@@ -26,6 +28,13 @@ export default function AcadmicQualifications() {
     Preference: '',
   })
   const [errors, setErrors] = useState({})
+  const [confirmModalContent, setConfirmModalContent] = useState({
+    title: '',
+    message: '',
+    onConfirm: () => { }
+  })
+
+
 
   const rowsPerPage = 10
 
@@ -35,9 +44,22 @@ export default function AcadmicQualifications() {
       item.Remarks?.toLowerCase().includes(searchTerm.toLowerCase()),
   )
 
-  const sortedData = [...filterdData].sort((a, b) =>
-    a.acadqname.localeCompare(b.acadqname),
-  )
+  const sortedData = [...filterdData].sort((a, b) => {
+    const nameA = a.acadqname.toLowerCase();
+    const nameB = b.acadqname.toLowerCase();
+
+    if (nameA < nameB) {
+      return sortOrder === 'asc' ? -1 : 1;
+    }
+    if (nameA > nameB) {
+      return sortOrder === 'asc' ? 1 : -1;
+    }
+    return 0; // names must be equal
+  });
+
+
+
+
 
   const indexOfLastRow = currentPage * rowsPerPage
   const indexOfFirstRow = indexOfLastRow - rowsPerPage
@@ -77,6 +99,15 @@ export default function AcadmicQualifications() {
   useEffect(() => {
     setCurrentPage(1)
   }, [searchTerm])
+
+
+
+
+
+  const handleReverseSorting = () => {
+    setSortOrder((prevOrder) => (prevOrder === 'asc' ? 'desc' : 'asc'));
+
+  }
 
   const handleAddNew = () => {
     setModalMode('add')
@@ -253,17 +284,21 @@ export default function AcadmicQualifications() {
       return
     }
 
-    if (!window.confirm(`Delete ${selectedItems.length} selected qualification(s)?`)) return
-
-    try {
-      //Delete each selected item
-      await Promise.all(selectedItems.map((code) => handleDelete(code)))
-
-      //clear selection
-      setSelectedItems([])
-    } catch (err) {
-      console.error('Error deleting selected Qualification:', err)
-    }
+    setConfirmModalContent({
+      title: 'Delect Selected Row',
+      message: `Are you sure you want to delete ${selectedItems.length} selected qualification(s)? `,
+      onConfirm: async () => {
+        try {
+          await Promise.all(selectedItems.map((code) => handleDelete(code)));
+          setSelectedItems([]);
+        }
+        catch (err) {
+          console.error("Error deleting selected Qualification:", err);
+        }
+        setShowConfirm(false);
+      }
+    })
+    setShowConfirm(true);
   }
 
   const handleCheckboxChange = (acadq_code) => {
@@ -311,9 +346,9 @@ export default function AcadmicQualifications() {
   // ------------------------------------------
 
   return (
-    <div className=" p-2 w-[96%] max-w-[1600px] mx-auto md:w-[90%] ">
+    <div className=" p-2 w-[96%] max-w-[1600px] bg-primary mx-auto md:w-[90%] ">
       {/* Search Bar + Container Header */}
-      <div className="flex justify-between items-center p-4 rounded-2xl shadow-xl backdrop-blur-lg bg-white h-26 ">
+      <div className="flex justify-between items-center p-4 rounded-2xl shadow-xl backdrop-blur-lg bg-primary h-26 ">
         <div className="relative">
           <FiSearch
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
@@ -351,12 +386,24 @@ export default function AcadmicQualifications() {
         </div>
       </div>
 
-      <div className="bg-white rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
+      <div className="bg-primary rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
         {/* Header Row */}
         <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem]
         sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] lg:text-base
         items-center justify-between border-b border-gray-300 mb-2 text-sm font-medium px-4 pt-4 pb-2 ">
-          <p>QUALIFICATION</p>
+          <div className="flex flex-row gap-2 items-center">
+            <p>QUALIFICATION</p>
+
+            <button className="cursor-pointer p-1 bg-green-300 rounded-3xl hover:bg-green-400  active:scale-90"
+              onClick={handleReverseSorting}
+            >
+              <Image src="/assets/asc-desc-icon.png"
+                alt="ascending-descending-icon"
+                height={16}
+                width={16}
+              /></button>
+          </div>
+
           <p>TYPE</p>
           <p>LEVEL</p>
           <p>EQUIVALENT TO</p>
@@ -404,6 +451,14 @@ export default function AcadmicQualifications() {
                   onClick={() => {
                     setSelectedId(item.acadq_code); // Store ID before opening modal
                     setSelectedQualification(item.acadqname)
+                    setConfirmModalContent({
+                      title: 'Delete Row',
+                      message: `Are you sure you want to delete the record: "Qualification: ${item.acadqname}"?`,
+                      onConfirm: () => {
+                        handleDelete(item.acadq_code);
+                        setShowConfirm(false);
+                      }
+                    })
                     setShowConfirm(true);
                   }}>
                   <Image
@@ -422,28 +477,25 @@ export default function AcadmicQualifications() {
           </div>
         )}
 
+
+
         {/* Confirm Modal - only render once, outside the map */}
         <ConfirmModal
           isOpen={showConfirm}
-          title="Delete Row"
-          message={<>
-            Are you sure you want to delete the record: "Qualification:{" "}
-            {/* FIX: Conditionally display acadqname if selectedQualification is an object */}
-            <strong>{selectedQualification?.acadqname || selectedQualification}</strong>"? 
-          </>}
+          title={confirmModalContent.title}
+          message={confirmModalContent.message}
           onCancel={() => setShowConfirm(false)}
-          onConfirm={() => {
-            handleDelete(selectedId);
-            setShowConfirm(false);
-          }}
+          onConfirm={confirmModalContent.onConfirm}
         />
+
+
 
 
         {/* Pagination */}
         {totalPages > 1 && ( // Only show pagination if there's more than 1 page
           <div className="flex justify-center items-center mt-4 pb-4 gap-2">
             {/* First Page Button */}
-            
+
 
             {/* Previous Button */}
             <button
@@ -454,7 +506,7 @@ export default function AcadmicQualifications() {
               Prev
             </button>
 
-              <button
+            <button
               onClick={() => handlePageChange(1)}
               className="h-10 w-10 mx-1 rounded-full flex items-center justify-center text-gray-700 bg-gray-200 hover:bg-gray-300 transition-colors duration-200 disabled:opacity-50"
               disabled={currentPage === 1}
@@ -483,148 +535,20 @@ export default function AcadmicQualifications() {
               Next
             </button>
 
-            
+
           </div>
         )}
       </div>
 
-      {/* Modal */}
-      {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-2xl p-6 w-[400px] shadow-lg relative">
-            <h2 className="text-lg font-medium mb-4">
-              {modalMode === 'add'
-                ? 'Add Qualification'
-                : modalMode === 'view'
-                  ? 'View Qualification'
-                  : 'Modify Qualification'}
-            </h2>
-            <button
-              className="absolute top-4 right-4 text-gray-500 hover:text-gray-800 cursor-pointer"
-              onClick={handleCloseModal}
-            >
-              <IoMdClose size={20} />
-            </button>
-
-            {/* Qualification Name Field with Floating Label */}
-            <div className="relative mb-6">
-              <input
-                type="text"
-                id="acadqname"
-                name="acadqname"
-                value={formData.acadqname}
-                onChange={handleChange}
-                placeholder=" " /* Crucial for floating label */
-                className={`peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent transition-colors duration-200 ease-in-out
-                            focus:border-blue-400
-                            ${errors.acadqname ? 'border-red-500' : 'border-gray-500'}`}
-                disabled={modalMode === 'view'}
-              />
-              <label
-                htmlFor="acadqname"
-                className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
-              >
-                Qualification Name
-              </label>
-              {errors.acadqname && (
-                <p className="text-red-500 text-sm mt-1">{errors.acadqname}</p>
-              )}
-            </div>
-
-            {/* Remarks Field with Floating Label */}
-            <div className="relative mb-6">
-              <input
-                type="text"
-                id="Remarks"
-                name="Remarks"
-                value={formData.Remarks}
-                onChange={handleChange}
-                placeholder=" " /* Crucial for floating label */
-                className={`peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent transition-colors duration-200 ease-in-out
-                            focus:border-blue-400
-                            ${errors.Remarks ? 'border-red-500' : 'border-gray-500'}`}
-                disabled={modalMode === 'view'}
-              />
-              <label
-                htmlFor="Remarks"
-                className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
-              >
-                Remarks
-              </label>
-              {errors.Remarks && (
-                <p className="text-red-500 text-sm mt-1">{errors.Remarks}</p>
-              )}
-            </div>
-
-            {/* Equivalent To Field with Floating Label */}
-            <div className="relative mb-6">
-              <input
-                type="text"
-                id="Equalification"
-                name="Equalification"
-                value={formData.Equalification}
-                onChange={handleChange}
-                placeholder=" " /* Crucial for floating label */
-                className={`peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent transition-colors duration-200 ease-in-out
-                            focus:border-blue-400
-                            ${errors.Equalification ? 'border-red-500' : 'border-gray-500'}`}
-                disabled={modalMode === 'view'}
-              />
-              <label
-                htmlFor="Equalification"
-                className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
-              >
-                Equivalent To
-              </label>
-              {errors.Equalification && (
-                <p className="text-red-500 text-sm mt-1">{errors.Equalification}</p>
-              )}
-            </div>
-
-            {/* Preference Field with Floating Label */}
-            <div className="relative mb-6">
-              <input
-                type="number" /* Changed type to number */
-                id="Preference"
-                name="Preference"
-                value={formData.Preference}
-                onChange={handleChange}
-                placeholder=" " /* Crucial for floating label */
-                className={`peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent transition-colors duration-200 ease-in-out
-                            focus:border-blue-400
-                            ${errors.Preference ? 'border-red-500' : 'border-gray-500'}`}
-                disabled={modalMode === 'view'}
-              />
-              <label
-                htmlFor="Preference"
-                className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
-              >
-                Preference
-              </label>
-              {errors.Preference && (
-                <p className="text-red-500 text-sm mt-1">{errors.Preference}</p>
-              )}
-            </div>
-
-            <div className="flex justify-end gap-2 mt-4">
-              {modalMode !== 'view' && (
-                <button
-                  onClick={handleSubmit}
-                  className="px-8 py-2 bg-green-400 text-white rounded-full cursor-pointer hover:bg-green-500"
-                >
-                  {modalMode === 'add' ? 'Add' : 'Update'}
-                </button>
-              )}
-              <button
-                onClick={handleCloseModal}
-                className="px-4 py-2 bg-red-200 text-red-400 rounded-full cursor-pointer hover:bg-red-300 hover:text-white"
-              >
-                {modalMode === 'view' ? 'Close' : 'Discard'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <QualificationModal
+        showModal={showModal}
+        modalMode={modalMode}
+        formData={formData}
+        errors={errors}
+        handleChange={handleChange}
+        handleSubmit={handleSubmit}
+        handleCloseModal={handleCloseModal}
+      />
 
     </div>
   )

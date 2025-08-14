@@ -79,7 +79,7 @@ export default function DashboardWidgets() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="p-5 rounded-2xl shadow-xl bg-white/80 backdrop-blur-lg border border-gray-100 flex flex-col"
+        className="p-5 rounded-2xl shadow-xl bg-primary backdrop-blur-lg border border-gray-100 flex flex-col"
       >
         <div className="flex justify-between items-center mb-4">
           <div>
@@ -136,7 +136,7 @@ export default function DashboardWidgets() {
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
   transition={{ duration: 0.6, delay: 0.1 }}
-  className="p-5 rounded-2xl shadow-xl bg-white/80 backdrop-blur-lg border border-gray-100 flex flex-col items-center"
+  className="p-5 rounded-2xl shadow-xl bg-primary backdrop-blur-lg border border-gray-100 flex flex-col items-center"
 >
   <h2 className="text-lg font-semibold mb-4 text-gray-700">Sales by Category</h2>
   <ResponsiveContainer width="100%" height={250}>
@@ -170,7 +170,7 @@ export default function DashboardWidgets() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.2 }}
-        className="p-5 rounded-2xl shadow-xl bg-white/80 backdrop-blur-lg border border-gray-100 flex flex-col"
+        className="p-5 rounded-2xl shadow-xl bg-primary backdrop-blur-lg border border-gray-100 flex flex-col"
       >
         <div className="flex items-center justify-between mb-4">
           <div>

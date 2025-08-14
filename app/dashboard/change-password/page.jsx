@@ -97,13 +97,13 @@ export default function ChangePassword() {
   };
 
   return (
-    <div className="min-h-screen flex items-start justify-center  relative px-4 py-10 md:py-30">
+    <div className="min-h-screen  flex items-start justify-center  relative px-4 py-10 md:py-30">
       {/* Background Shapes */}
       <div className="absolute top-0 right-0 w-56 h-56 bg-[#6fd0ff] rounded-bl-[70%] opacity-30 z-0"></div>
       <div className="absolute bottom-0 left-0 w-56 h-56 bg-[#ff8a65] rounded-tr-[70%] opacity-30 z-0"></div>
 
       {/* Main Card */}
-      <div className="relative z-0 bg-white rounded-2xl shadow-xl p-10 flex flex-col md:flex-row items-center gap-10 w-full max-w-5xl">
+      <div className="relative z-0 bg-primary rounded-2xl shadow-xl p-10 flex flex-col md:flex-row items-center gap-10 w-full max-w-5xl">
         {/* Illustration */}
         <div className="w-full md:w-1/2">
           <Image

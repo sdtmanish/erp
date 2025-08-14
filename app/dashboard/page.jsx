@@ -3,6 +3,7 @@
 
 import DashboardWidgets from "../components/DashboardWidgets";
 import Employees from "../components/Employees";
+import NoticeBoard from "../components/Noticeboard";
 import Tiles from "../components/Tiles";
 import Welcome from "../components/Welcome";
 
@@ -12,7 +13,9 @@ export default function DashboardPage() {
       <Welcome/>
       <Tiles/>
       <DashboardWidgets/>
+      <NoticeBoard/>
       <Employees/>
+      
     
     </div>
   );

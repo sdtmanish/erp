@@ -2,16 +2,7 @@
 
 import {useRouter} from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {
-  FiChevronRight,
-  FiHome,
-  FiSettings,
-  FiUsers,
-  FiBarChart2,
-  FiFolder,
-  Fix,
-  FiX
-} from 'react-icons/fi';
+import { FiChevronRight, FiHome, FiSettings, FiUsers, FiBarChart2, FiFolder, FiX } from 'react-icons/fi';
 import { Scrollbar } from 'react-scrollbars-custom';
 
 export default function Sidebar({ isOpen, setIsOpen }) {
@@ -19,26 +10,28 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [expanded, setExpanded] = useState('');
   const [menuGroups, setMenuGroups] = useState({});
   const [isMobile, setIsMobile] = useState(false);
+  // NEW: Add a state to track hover status
+  const [isHovering, setIsHovering] = useState(false);
 
   const router = useRouter();
 
   const handleDashboardClick = () => {
     // setActive('Dashboard');
     router.push('/dashboard');
-  }
+  };
 
   // Hover animation
   const hoverSlideStyle = (start, end) => ({
     backgroundImage: `linear-gradient(to right, ${start} 0%, ${end} 100%)`,
     backgroundSize: '0% 100%',
     backgroundRepeat: 'no-repeat',
-    transition: 'background-size 0.3s ease-in-out'
+    transition: 'background-size 0.3s ease-in-out',
   });
 
   const hoverSlideActiveStyle = (start, end) => ({
     backgroundImage: `linear-gradient(to right, ${start} 0%, ${end} 100%)`,
     backgroundSize: '100% 100%',
-    backgroundRepeat: 'no-repeat'
+    backgroundRepeat: 'no-repeat',
   });
 
   // Color palettes
@@ -49,7 +42,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     { start: '#fdf2f8', end: '#fce7f3', active: 'text-pink-600 dark:text-pink-400' },
     { start: '#fefce8', end: '#fef9c3', active: 'text-yellow-600 dark:text-yellow-400' },
     { start: '#fef2f2', end: '#fee2e2', active: 'text-red-600 dark:text-red-400' },
-    { start: '#ecfeff', end: '#cffafe', active: 'text-cyan-600 dark:text-cyan-400' }
+    { start: '#ecfeff', end: '#cffafe', active: 'text-cyan-600 dark:text-cyan-400' },
   ];
 
   // Group icons
@@ -58,7 +51,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     Settings: <FiSettings className="text-lg" />,
     Users: <FiUsers className="text-lg" />,
     Reports: <FiBarChart2 className="text-lg" />,
-    Default: <FiFolder className="text-lg" />
+    Default: <FiFolder className="text-lg" />,
   };
 
   // Item icons
@@ -66,7 +59,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     DashboardHome: <FiHome className="text-lg" />,
     UserManagement: <FiUsers className="text-lg" />,
     Reports: <FiBarChart2 className="text-lg" />,
-    Default: <FiFolder className="text-lg" />
+    Default: <FiFolder className="text-lg" />,
   };
 
   // Detect screen size
@@ -82,9 +75,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     const stored = localStorage.getItem('menuData');
     if (stored) {
       const parsed = JSON.parse(stored);
-      const filtered = parsed.filter(
-        (item) => item.MainGroup !== 'Tiles' && item.MainGroup !== 'Custom'
-      );
+      const filtered = parsed.filter((item) => item.MainGroup !== 'Tiles' && item.MainGroup !== 'Custom');
       const grouped = {};
       for (const item of filtered) {
         if (!grouped[item.MainGroup]) grouped[item.MainGroup] = [];
@@ -94,39 +85,38 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     }
   }, []);
 
+  // Check if content should be shown
+  const showContent = isOpen || isHovering;
+
   return (
     <>
       <aside
-        className={`fixed top-0 left-0 h-screen bg-white  shadow-md border-r border-blue-100  flex flex-col transition-all duration-300 z-40 rounded-none 
-          ${isMobile ? (isOpen ? 'w-full' : 'w-0') : isOpen ? 'w-64' : 'w-16'}`}
+       className={`
+          ${isMobile ? 'fixed' : 'relative'} top-0 left-0 h-screen bg-primary shadow-md border-r border-blue-100 flex flex-col transition-all duration-300 z-40 rounded-none 
+          ${isMobile ? (isOpen ? 'w-full' : 'w-0') : isOpen ? 'w-64' : 'w-16 hover:w-64'}
+        `}
+        // NEW: Add onMouseEnter and onMouseLeave handlers to the aside element
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
       >
-       {/* Sidebar Header */}
-{(!isMobile || isOpen) && (
-  <div className="p-4 pt-8 cursor-pointer border-b border-gray-200  bg-white sticky top-0 z-50 flex items-center justify-between">
-    <div className="flex gap-2"
-    onClick={handleDashboardClick}
-    
-    >
-      <img src="/assets/logo.png" className="w-6 h-6" alt="Logo" />
-      {isOpen && (
-        <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">
-          Spike Admin
-        </h1>
-      )}
-    </div>
+        {/* Sidebar Header */}
+        {(!isMobile || isOpen) && (
+          <div className="p-4 pt-8 cursor-pointer border-b border-gray-200 bg-primary sticky top-0 z-50 flex items-center justify-between">
+            <div className="flex gap-2" onClick={handleDashboardClick}>
+              <img src="/assets/logo.png" className="w-6 h-6" alt="Logo" />
+              {/* UPDATED: Show content if open OR hovering */}
+              {showContent && (
+                <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">Spike Admin</h1>
+              )}
+            </div>
 
-    {isMobile && isOpen && (
-      <button
-        onClick={() => setIsOpen(false)}
-        className="text-gray-600 dark:text-gray-300 hover:text-red-500 transition"
-      >
-        <FiX />
-      </button>
-    )}
-  </div>
-)}
-
-       
+            {isMobile && isOpen && (
+              <button onClick={() => setIsOpen(false)} className="text-gray-600 dark:text-gray-300 hover:text-red-500 transition">
+                <FiX />
+              </button>
+            )}
+          </div>
+        )}
 
         {/* Scrollable Menu */}
         <Scrollbar
@@ -136,16 +126,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               background: 'rgba(100, 116, 139, 0.6)',
               borderRadius: '9999px',
               width: '6px',
-              minHeight: '20px'
-            }
+              minHeight: '20px',
+            },
           }}
           trackYProps={{
-            style: { background: 'transparent', width: '6px' }
+            style: { background: 'transparent', width: '6px' },
           }}
         >
           <div>
             <nav className="flex flex-col gap-3 mt-2">
               {Object.entries(menuGroups).map(([groupName, items], groupIndex) => {
+                // The expanded state should still depend only on click, not hover
                 const isGroupOpen = expanded === groupName && isOpen;
                 const groupPalette = colorPalettes[groupIndex % colorPalettes.length];
 
@@ -166,16 +157,17 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     >
                       <span className="flex items-center gap-2 flex-1">
                         {groupIcons[groupName] || groupIcons.Default}
-                        {isOpen && <span>{groupName}</span>}
+                        {/* UPDATED: Show group name if open OR hovering */}
+                        {showContent && <span>{groupName}</span>}
                       </span>
-                      {isOpen && (
+                      {showContent && (
                         <FiChevronRight
                           className={`transition-transform duration-200 ${isGroupOpen ? 'rotate-90' : ''}`}
                         />
                       )}
                     </button>
 
-                    {/* Dropdown Items */}
+                    {/* Dropdown Items (Only show if open, not on hover) */}
                     {isOpen && (
                       <div
                         className={`transition-all duration-300 overflow-hidden ${
@@ -194,7 +186,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                                   setActive(item.WebModuleName);
                                   if (isMobile) setIsOpen(false);
                                 }}
-                                className={`flex items-center gap-2 px-4 py-2  cursor-pointer rounded-e-3xl transition-colors duration-200 
+                                className={`flex items-center gap-2 px-4 py-2 cursor-pointer rounded-e-3xl transition-colors duration-200 
                                   ${isActive ? palette.active : 'text-gray-700 dark:text-gray-200'}`}
                                 style={
                                   isActive
@@ -205,8 +197,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                                 onMouseLeave={(e) => !isActive && (e.currentTarget.style.backgroundSize = '0% 100%')}
                               >
                                 {itemIcons[item.WebModuleName] || itemIcons.Default}
-                                {isOpen && (
-                                  <span className="relative z-10 text-base truncate ">
+                                {/* UPDATED: Show item name if open OR hovering */}
+                                {showContent && (
+                                  <span className="relative z-10 text-base truncate">
                                     {item.WebModuleName || 'Unnamed'}
                                   </span>
                                 )}
@@ -224,27 +217,26 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         </Scrollbar>
 
         {/* Footer */}
-      {isOpen && ( <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
-          <div
-            className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} bg-blue-50 dark:bg-gray-800 px-4 py-2 rounded-2xl cursor-pointer hover:shadow-sm transition`}
-          >
-            <div className="flex items-center gap-2">
-              <img
-                src="/assets/logo.png"
-                className="w-8 h-8 rounded-full object-cover"
-                alt="User"
-              />
-              {isOpen && (
-                <div>
-                  <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Mike</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Admin</p>
-                </div>
-              )}
+        {/* UPDATED: Show footer if open OR hovering */}
+        {showContent && (
+          <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-primary dark:bg-gray-900">
+            <div
+              className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} bg-blue-50 dark:bg-gray-800 px-4 py-2 rounded-2xl cursor-pointer hover:shadow-sm transition`}
+            >
+              <div className="flex items-center gap-2">
+                <img src="/assets/logo.png" className="w-8 h-8 rounded-full object-cover" alt="User" />
+                {/* UPDATED: Show footer text if open OR hovering */}
+                {showContent && (
+                  <div>
+                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Mike</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Admin</p>
+                  </div>
+                )}
+              </div>
+              {showContent && <FiChevronRight className="text-gray-500 dark:text-gray-400" />}
             </div>
-            {isOpen && <FiChevronRight className="text-gray-500 dark:text-gray-400" />}
           </div>
-        
-        </div>  )} 
+        )}
       </aside>
     </>
   );

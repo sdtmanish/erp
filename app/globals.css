@@ -37,7 +37,12 @@ body {
 :root {
   --background: #f3f8ff;
   --foreground: #171717;
-  --primary: #FF0000;
+  /* for background of boxes*/
+  --primary: white;  
+  
+  --secondary:#5a01ff;
+  /*for text*/
+  --tercery:white;          
 
 }
 
@@ -46,7 +51,8 @@ body {
   --color-foreground: var(--foreground);
  --font-sans: var(--font-sans); /* Inter from layout.js */
   --font-mono: var(--font-mono); /* Geist Mono from layout.js */ 
-  
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary)
 }
 
 /* Dark Mode */

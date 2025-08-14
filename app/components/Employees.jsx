@@ -45,7 +45,7 @@ export default function TopEmployees() {
         {employees.map((emp, index) => (
           <div
             key={index}
-            className="bg-white rounded-xl shadow-md p-6 flex flex-col md:flex-row justify-between items-start md:items-center"
+            className="bg-primary rounded-xl shadow-md p-6 flex flex-col md:flex-row justify-between items-start md:items-center"
           >
             <div className="flex flex-col md:flex-row md:items-center md:gap-16 w-full space-y-2 md:space-y-0">
               <div className="font-semibold text-lg text-gray-800">{emp.name}</div>
