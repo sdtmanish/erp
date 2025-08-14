@@ -16,7 +16,7 @@ export default function DashboardLayout({ children }) {
 
         {/* Main Content Area */}
         <div
-          className="flex-1 flex flex-col transition-all duration-300"
+          className="flex-1 flex flex-col transition-all duration-300 h-[100vh] overflow-y-auto"
         >
           <Header isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />
           
