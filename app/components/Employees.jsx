@@ -13,10 +13,10 @@ const employees = [
     role: "Designer",
     hourRate: "$70/hour",
     skills: "JavaScript",
-    status: "On Holiday........",
+    status: "On Holiday................",
   },
   {
-    name: "Arya H. Shah",
+    name: "Arya H. Shahjjk ",
     role: "Developer",
     hourRate: "$40/hour",
     skills: "React",
