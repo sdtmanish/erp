@@ -3,8 +3,8 @@ import React from 'react';
 
 export default function NoticeBoardDashboard() {
   return (
-    <div className="min-h-screen bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 sm:p-6 lg:p-8 transition-colors duration-300 font-sans">
-      
+    <div className="max-h-screen w-[96%] md:w-[90%] max-w-[1600px] bg-primary shadow-xl rounded-2xl  mx-auto bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 sm:p-6 lg:p-8 transition-colors duration-300 ">
+      {/* Dashboard Header */}
       
 
       {/* Main Dashboard Grid */}
@@ -28,8 +28,30 @@ export default function NoticeBoardDashboard() {
             View All Announcements
           </button>
         </div>
-              
-        {/* Card 2: Quick Stats */}
+
+        {/* Card 2: Upcoming Events */}
+        <div className="md:col-span-2 lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
+          <h2 className="text-xl font-semibold mb-4 text-orange-700 dark:text-orange-400">Upcoming Events 📅</h2>
+          <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+            <li className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+              <span>Product Launch Webinar</span>
+              <span className="font-medium text-blue-600 dark:text-blue-400">Aug 25, 2025</span>
+            </li>
+            <li className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+              <span>Annual Team Retreat</span>
+              <span className="font-medium text-blue-600 dark:text-blue-400">Sep 10-12, 2025</span>
+            </li>
+            <li className="flex justify-between items-center bg-gray-50 dark:bg-gray-700 p-3 rounded-md">
+              <span>Q3 Performance Review</span>
+              <span className="font-medium text-blue-600 dark:text-blue-400">Oct 01, 2025</span>
+            </li>
+          </ul>
+          <button className="mt-5 w-full py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 transition-colors duration-200 shadow-md">
+            View Calendar
+          </button>
+        </div>
+
+        {/* Card 3: Quick Stats */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
           <h2 className="text-xl font-semibold mb-4 text-green-700 dark:text-green-400">Quick Stats 📈</h2>
           <div className="grid grid-cols-2 gap-4 text-center">
@@ -52,7 +74,7 @@ export default function NoticeBoardDashboard() {
           </div>
         </div>
 
-        {/* Card 3: Important Links */}
+        {/* Card 4: Important Links */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">
           <h2 className="text-xl font-semibold mb-4 text-red-700 dark:text-red-400">Important Links 🔗</h2>
           <ul className="space-y-3 text-sm text-gray-700 dark:text-gray-300">
@@ -63,7 +85,7 @@ export default function NoticeBoardDashboard() {
           </ul>
         </div>
 
-        {/* Card 4: Personal Message (Your original content transformed) */}
+        {/* Card 5: Personal Message (Your original content transformed) */}
         <div className="md:col-span-2 lg:col-span-1 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300 flex flex-col justify-between">
           <div>
             <h2 className="text-xl font-semibold mb-4 text-purple-700 dark:text-purple-400">Personal Note 👋</h2>
@@ -76,7 +98,8 @@ export default function NoticeBoardDashboard() {
           </p>
         </div>
 
-       
+        
+
       </div>
     </div>
   );

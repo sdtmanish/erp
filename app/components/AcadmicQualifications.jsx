@@ -4,6 +4,12 @@ import { FaRegEye, FaRegTrashAlt } from 'react-icons/fa'
 import { FiSearch } from 'react-icons/fi'
 import { IoMdClose } from 'react-icons/io'
 import { FaRegEdit } from 'react-icons/fa'
+import { FaBackwardStep } from 'react-icons/fa6';
+import { FaForwardStep } from 'react-icons/fa6';
+import { MdAddToPhotos,  MdDeleteForever } from "react-icons/md";
+import { FaTrash } from 'react-icons/fa';
+
+
 import ConfirmModal from './popup/ConfirmModal'
 import QualificationModal from './popup/QualificationModal'; // Adjust the path as needed
 import { MdDelete } from "react-icons/md"; // This import is unused, but kept as per "don't change anything unnecessary"
@@ -332,7 +338,7 @@ export default function AcadmicQualifications() {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`h-10 w-10 mx-1 rounded-full cursor-pointer flex items-center justify-center text-sm transition-colors duration-200
+          className={`h-10 w-10  rounded-full cursor-pointer flex items-center justify-center text-sm transition-colors duration-200
             ${currentPage === i ? 'bg-[#8c28e1] text-white shadow-md' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}
             disabled:opacity-90`}
           disabled={currentPage === i}
@@ -348,7 +354,7 @@ export default function AcadmicQualifications() {
   return (
     <div className=" p-2 w-[96%] max-w-[1600px] bg-primary mx-auto md:w-[90%] ">
       {/* Search Bar + Container Header */}
-      <div className="flex justify-between items-center p-4 rounded-2xl shadow-xl backdrop-blur-lg bg-primary h-26 ">
+      <div className="flex justify-between items-center p-4 rounded-2xl shadow-md backdrop-blur-lg bg-primary h-26 ">
         <div className="relative">
           <FiSearch
             className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
@@ -364,23 +370,27 @@ export default function AcadmicQualifications() {
         </div>
         <div className="flex flex-row gap-2">
           <button
-            className="px-4 py-2 bg-blue-600 rounded-lg text-white cursor-pointer hover:bg-blue-700
+            className="px-2 py-2 flex flex-row gap-1  bg-blue-500 rounded-lg text-white cursor-pointer hover:bg-blue-600
             active:scale-95 active:bg-blue-800 
             "
             onClick={handleAddNew}
           >
             Add New
+             <MdAddToPhotos 
+             size={16}/>
+
           </button>
           <button
-            className={`px-4 py-2 rounded-lg text-white cursor-pointer 
+            className={` flex flex-row gap-1 px-4 py-2 rounded-lg  text-white cursor-pointer 
               ${selectedItems.length
-                ? "bg-red-700 hover:bg-red-800 active:scale-95 active:bg-red-800"
+                ? "bg-red-600 hover:bg-red-700 active:scale-95 active:bg-red-800"
                 : "bg-red-400 cursor-not-allowed active:scale-100 active:bg-red-400"
               }`}
             onClick={handleDeleteSelected}
             disabled={!selectedItems.length}
           >
             Delete All
+            <FaTrash size={14} />
           </button>
 
         </div>
@@ -389,18 +399,18 @@ export default function AcadmicQualifications() {
       <div className="bg-primary rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
         {/* Header Row */}
         <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem]
-        sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] lg:text-base
+        sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] bg-[#fbfbfb] lg:text-base
         items-center justify-between border-b border-gray-300 mb-2 text-sm font-medium px-4 pt-4 pb-2 ">
-          <div className="flex flex-row gap-2 items-center">
+          <div className="flex flex-row gap-1 items-center ">
             <p>QUALIFICATION</p>
 
-            <button className="cursor-pointer p-1 bg-green-300 rounded-3xl hover:bg-green-400  active:scale-90"
+            <button className="cursor-pointer p-1  rounded-3xl hover:bg-gray-200   active:scale-90"
               onClick={handleReverseSorting}
             >
               <Image src="/assets/asc-desc-icon.png"
                 alt="ascending-descending-icon"
-                height={16}
-                width={16}
+                height={12}
+                width={12}
               /></button>
           </div>
 
@@ -498,13 +508,23 @@ export default function AcadmicQualifications() {
 
 
             {/* Previous Button */}
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              className="px-5 py-2 bg-blue-600 rounded-lg text-white cursor-pointer hover:bg-blue-700 disabled:opacity-50"
-              disabled={currentPage === 1}
-            >
-              Prev
-            </button>
+            <div >
+              <button
+
+                onClick={() => handlePageChange(currentPage - 1)}
+
+                disabled={currentPage === 1}
+                className="px-2 py-2 flex flex-row items-center gap-1 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 active:scale-95 text-white disabled:opacity-50 "
+              >
+                <FaBackwardStep
+                  size={16}
+                  className=" cursor-pointer text-white "
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  
+                />
+                Prev
+              </button>
+            </div>
 
             <button
               onClick={() => handlePageChange(1)}
@@ -529,10 +549,17 @@ export default function AcadmicQualifications() {
             {/* Next Button */}
             <button
               onClick={() => handlePageChange(currentPage + 1)}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 disabled:opacity-50"
+              className="px-2 py-2 flex flex-row items-center gap-1 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 active:scale-95 text-white disabled:opacity-50"
               disabled={currentPage === totalPages}
             >
+               
               Next
+              <FaForwardStep
+                  size={16}
+                  className=" cursor-pointer text-white "
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  
+                />
             </button>
 
 
