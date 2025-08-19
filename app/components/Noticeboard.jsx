@@ -3,12 +3,12 @@ import React from 'react';
 
 export default function NoticeBoardDashboard() {
   return (
-    <div className="max-h-screen w-[96%] md:w-[90%] max-w-[1600px] bg-primary shadow-xl rounded-2xl  mx-auto bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 sm:p-6 lg:p-8 transition-colors duration-300 ">
+    <div className="min-h-screen/2 w-[96%] md:w-[90%] max-w-[1600px] bg-primary shadow-xl rounded-2xl  mx-auto text-gray-900 dark:text-gray-100 p-4 sm:px-6 lg:px-8 transition-colors duration-300 flex items-center ">
       {/* Dashboard Header */}
       
 
       {/* Main Dashboard Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6  ">
 
         {/* Card 1: Announcements */}
         <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 hover:shadow-xl transition-shadow duration-300">

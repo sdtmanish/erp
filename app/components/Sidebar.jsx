@@ -10,17 +10,14 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const [expanded, setExpanded] = useState('');
   const [menuGroups, setMenuGroups] = useState({});
   const [isMobile, setIsMobile] = useState(false);
-  // NEW: Add a state to track hover status
   const [isHovering, setIsHovering] = useState(false);
 
   const router = useRouter();
 
   const handleDashboardClick = () => {
-    // setActive('Dashboard');
     router.push('/dashboard');
   };
 
-  // Hover animation
   const hoverSlideStyle = (start, end) => ({
     backgroundImage: `linear-gradient(to right, ${start} 0%, ${end} 100%)`,
     backgroundSize: '0% 100%',
@@ -34,7 +31,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     backgroundRepeat: 'no-repeat',
   });
 
-  // Color palettes
   const colorPalettes = [
     { start: '#eff6ff', end: '#dbeafe', active: 'text-blue-600 dark:text-blue-400' },
     { start: '#ecfdf5', end: '#d1fae5', active: 'text-green-600 dark:text-green-400' },
@@ -45,7 +41,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     { start: '#ecfeff', end: '#cffafe', active: 'text-cyan-600 dark:text-cyan-400' },
   ];
 
-  // Group icons
   const groupIcons = {
     Dashboard: <FiHome className="text-lg" />,
     Settings: <FiSettings className="text-lg" />,
@@ -54,7 +49,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     Default: <FiFolder className="text-lg" />,
   };
 
-  // Item icons
   const itemIcons = {
     DashboardHome: <FiHome className="text-lg" />,
     UserManagement: <FiUsers className="text-lg" />,
@@ -62,7 +56,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     Default: <FiFolder className="text-lg" />,
   };
 
-  // Detect screen size
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
     handleResize();
@@ -70,7 +63,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Load menu items
   useEffect(() => {
     const stored = localStorage.getItem('menuData');
     if (stored) {
@@ -84,27 +76,23 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       setMenuGroups(grouped);
     }
   }, []);
-
-  // Check if content should be shown
+  
   const showContent = isOpen || isHovering;
 
   return (
     <>
       <aside
-       className={`
+        className={`
           ${isMobile ? 'fixed' : 'relative'} top-0 left-0 h-screen bg-primary shadow-md border-r border-blue-100 flex flex-col transition-all duration-300 z-40 rounded-none 
           ${isMobile ? (isOpen ? 'w-full' : 'w-0') : isOpen ? 'w-64' : 'w-16 hover:w-64'}
         `}
-        // NEW: Add onMouseEnter and onMouseLeave handlers to the aside element
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
-        {/* Sidebar Header */}
         {(!isMobile || isOpen) && (
           <div className="p-4 pt-8 cursor-pointer border-b border-gray-200 bg-primary sticky top-0 z-50 flex items-center justify-between">
             <div className="flex gap-2" onClick={handleDashboardClick}>
               <img src="/assets/logo.png" className="w-6 h-6" alt="Logo" />
-              {/* UPDATED: Show content if open OR hovering */}
               {showContent && (
                 <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">Spike Admin</h1>
               )}
@@ -118,7 +106,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </div>
         )}
 
-        {/* Scrollable Menu */}
         <Scrollbar
           style={{ flex: 1, width: '100%' }}
           thumbYProps={{
@@ -136,13 +123,13 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           <div>
             <nav className="flex flex-col gap-3 mt-2">
               {Object.entries(menuGroups).map(([groupName, items], groupIndex) => {
-                // The expanded state should still depend only on click, not hover
-                const isGroupOpen = expanded === groupName && isOpen;
+                const isGroupOpen = expanded === groupName;
                 const groupPalette = colorPalettes[groupIndex % colorPalettes.length];
 
                 return (
                   <div key={groupName}>
                     <button
+                      // Corrected onClick handler to toggle expanded state
                       onClick={() => setExpanded(isGroupOpen ? '' : groupName)}
                       className={`relative w-full flex items-center px-4 py-3 text-base font-normal rounded-e-3xl transition 
                         ${isGroupOpen ? groupPalette.active : 'text-gray-900 dark:text-gray-200'}`}
@@ -157,7 +144,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                     >
                       <span className="flex items-center gap-2 flex-1">
                         {groupIcons[groupName] || groupIcons.Default}
-                        {/* UPDATED: Show group name if open OR hovering */}
                         {showContent && <span>{groupName}</span>}
                       </span>
                       {showContent && (
@@ -167,48 +153,45 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                       )}
                     </button>
 
-                    {/* Dropdown Items (Only show if open, not on hover) */}
-                    {isOpen && (
-                      <div
-                        className={`transition-all duration-300 overflow-hidden ${
-                          isGroupOpen ? 'max-h-[9999px] mt-2' : 'max-h-0'
-                        }`}
-                      >
-                        <div className="pl-4 pr-0 flex flex-col gap-2">
-                          {items.map((item, i) => {
-                            const isActive = active === item.WebModuleName;
-                            const palette = colorPalettes[i % colorPalettes.length];
+                    <div
+                      // Corrected visibility condition for the submenu
+                      className={`transition-all duration-300 overflow-hidden ${
+                        isGroupOpen ? 'max-h-[9999px] mt-2' : 'max-h-0'
+                      }`}
+                    >
+                      <div className="pl-4 pr-0 flex flex-col gap-2">
+                        {items.map((item, i) => {
+                          const isActive = active === item.WebModuleName;
+                          const palette = colorPalettes[i % colorPalettes.length];
 
-                            return (
-                              <div
-                                key={i}
-                                onClick={() => {
-                                  setActive(item.WebModuleName);
-                                  if (isMobile) setIsOpen(false);
-                                }}
-                                className={`flex items-center gap-2 px-4 py-2 cursor-pointer rounded-e-3xl transition-colors duration-200 
-                                  ${isActive ? palette.active : 'text-gray-700 dark:text-gray-200'}`}
-                                style={
-                                  isActive
-                                    ? hoverSlideActiveStyle(palette.start, palette.end)
-                                    : hoverSlideStyle(palette.start, palette.end)
-                                }
-                                onMouseEnter={(e) => !isActive && (e.currentTarget.style.backgroundSize = '100% 100%')}
-                                onMouseLeave={(e) => !isActive && (e.currentTarget.style.backgroundSize = '0% 100%')}
-                              >
-                                {itemIcons[item.WebModuleName] || itemIcons.Default}
-                                {/* UPDATED: Show item name if open OR hovering */}
-                                {showContent && (
-                                  <span className="relative z-10 text-base truncate">
-                                    {item.WebModuleName || 'Unnamed'}
-                                  </span>
-                                )}
-                              </div>
-                            );
-                          })}
-                        </div>
+                          return (
+                            <div
+                              key={i}
+                              onClick={() => {
+                                setActive(item.WebModuleName);
+                                if (isMobile) setIsOpen(false);
+                              }}
+                              className={`flex items-center gap-2 px-4 py-2 cursor-pointer rounded-e-3xl transition-colors duration-200 
+                                ${isActive ? palette.active : 'text-gray-700 dark:text-gray-200'}`}
+                              style={
+                                isActive
+                                  ? hoverSlideActiveStyle(palette.start, palette.end)
+                                  : hoverSlideStyle(palette.start, palette.end)
+                              }
+                              onMouseEnter={(e) => !isActive && (e.currentTarget.style.backgroundSize = '100% 100%')}
+                              onMouseLeave={(e) => !isActive && (e.currentTarget.style.backgroundSize = '0% 100%')}
+                            >
+                              {itemIcons[item.WebModuleName] || itemIcons.Default}
+                              {showContent && (
+                                <span className="relative z-10 text-base truncate">
+                                  {item.WebModuleName || 'Unnamed'}
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}
@@ -216,8 +199,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
           </div>
         </Scrollbar>
 
-        {/* Footer */}
-        {/* UPDATED: Show footer if open OR hovering */}
         {showContent && (
           <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-primary dark:bg-gray-900">
             <div
@@ -225,7 +206,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             >
               <div className="flex items-center gap-2">
                 <img src="/assets/logo.png" className="w-8 h-8 rounded-full object-cover" alt="User" />
-                {/* UPDATED: Show footer text if open OR hovering */}
                 {showContent && (
                   <div>
                     <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Mike</p>

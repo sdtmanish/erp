@@ -13,7 +13,7 @@ const employees = [
     role: "Designer",
     hourRate: "$70/hour",
     skills: "JavaScript",
-    status: "On Holiday........",
+    status: "On Holiday",
   },
   {
     name: "Arya H. Shah",
@@ -40,14 +40,14 @@ const employees = [
 
 export default function TopEmployees() {
   return (
-    <section className=" w-[96%] md:w-[90%] max-w-[1600px] mx-auto py-4 px-2 md:px-2">
-      <div className=" mx-auto space-y-2">
+    <section className="w-[96%] md:w-[90%] max-w-[1600px] mx-auto py-4 px-2 md:px-2">
+      <div className="mx-auto space-y-2">
         {employees.map((emp, index) => (
           <div
             key={index}
             className="bg-primary rounded-xl shadow-md p-6 flex flex-col md:flex-row justify-between items-start md:items-center"
           >
-            <div className="flex flex-col md:flex-row md:items-center md:gap-16 w-full space-y-2 md:space-y-0">
+            <div className="flex flex-col md:grid md:grid-cols-4 md:items-center w-full space-y-2 md:space-y-0">
               <div className="font-semibold text-lg text-gray-800">{emp.name}</div>
               <div className="text-gray-500">{emp.role}</div>
               <div className="text-gray-600">{emp.hourRate}</div>
@@ -59,7 +59,7 @@ export default function TopEmployees() {
                 className={`inline-block px-4 py-1 text-sm rounded-full font-medium w-30 ${
                   emp.status === "Available"
                     ? "bg-green-100 text-green-700"
-                    : emp.status === "On Holiday"
+                    : emp.status === "On Holiday........"
                     ? "bg-yellow-100 text-yellow-700"
                     : emp.status === "Absent"
                     ? "bg-red-100 text-red-700"

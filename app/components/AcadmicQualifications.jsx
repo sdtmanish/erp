@@ -6,7 +6,7 @@ import { IoMdClose } from 'react-icons/io'
 import { FaRegEdit } from 'react-icons/fa'
 import { FaBackwardStep } from 'react-icons/fa6';
 import { FaForwardStep } from 'react-icons/fa6';
-import { MdAddToPhotos,  MdDeleteForever } from "react-icons/md";
+import { MdAddToPhotos, MdDeleteForever } from "react-icons/md";
 import { FaTrash } from 'react-icons/fa';
 
 
@@ -22,6 +22,7 @@ export default function AcadmicQualifications() {
   const [sortOrder, setSortOrder] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedId, setSelectedId] = useState(null);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [showModal, setShowModal] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false);
   const [modalMode, setModalMode] = useState('add') // 'add', 'view', 'modify'
@@ -42,7 +43,7 @@ export default function AcadmicQualifications() {
 
 
 
-  const rowsPerPage = 10
+  
 
   const filterdData = data.filter(
     (item) =>
@@ -70,6 +71,7 @@ export default function AcadmicQualifications() {
   const indexOfLastRow = currentPage * rowsPerPage
   const indexOfFirstRow = indexOfLastRow - rowsPerPage
   const currentRows = sortedData.slice(indexOfFirstRow, indexOfLastRow)
+
 
   // Calculate total pages based on filtered data (important for accurate pagination)
   const totalPages = Math.ceil(filterdData.length / rowsPerPage) // Changed from data.length
@@ -104,7 +106,7 @@ export default function AcadmicQualifications() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [searchTerm])
+  }, [searchTerm, rowsPerPage])
 
 
 
@@ -355,19 +357,38 @@ export default function AcadmicQualifications() {
     <div className=" p-2 w-[96%] max-w-[1600px] bg-primary mx-auto md:w-[90%] ">
       {/* Search Bar + Container Header */}
       <div className="flex justify-between items-center p-4 rounded-2xl shadow-md backdrop-blur-lg bg-primary h-26 ">
-        <div className="relative">
-          <FiSearch
-            className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-            size={18}
-          />
-          <input
-            type="text"
-            placeholder="Search..."
-            className=" bg-white border border-gray-400 rounded-xl h-10 pl-9 text-md focus:outline-none focus:border-blue-300"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
+
+        <div className="flex flex-row items-center">
+          <div className="relative">
+            <FiSearch
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+              size={18}
+            />
+            <input
+              type="text"
+              placeholder="Search..."
+              className=" bg-white border border-gray-400 rounded-xl h-10 pl-9 text-md focus:outline-none focus:border-blue-300"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div>
+            <select
+             value={rowsPerPage}
+             onChange={(e)=> setRowsPerPage(Number(e.target.value))}
+             className="focus:outline-none cursor-pointer"
+
+
+            >
+              <option>10</option>
+              <option>20</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+          </div>
+
         </div>
+
         <div className="flex flex-row gap-2">
           <button
             className="px-2 py-2 flex flex-row gap-1  bg-blue-500 rounded-lg text-white cursor-pointer hover:bg-blue-600
@@ -376,8 +397,8 @@ export default function AcadmicQualifications() {
             onClick={handleAddNew}
           >
             Add New
-             <MdAddToPhotos 
-             size={16}/>
+            <MdAddToPhotos
+              size={16} />
 
           </button>
           <button
@@ -414,9 +435,9 @@ export default function AcadmicQualifications() {
               /></button>
           </div>
 
-          <p>TYPE</p>
-          <p>LEVEL</p>
-          <p>EQUIVALENT TO</p>
+          <p className="text-center">TYPE</p>
+          <p className="text-center">LEVEL</p>
+          <p className="text-center" >EQUIVALENT TO</p>
           <p className="text-center">ACTIONS</p>
         </div>
 
@@ -442,9 +463,11 @@ export default function AcadmicQualifications() {
                 />
                 <p>{item.acadqname}</p>
               </div>
-              <p>{item.Remarks}</p>
-              <p >{item.Preference}</p>
-              <p>{item.Equalification}</p>
+              <p className="text-center">{item.Remarks}</p>
+              <p className="text-center" >{item.Preference}</p>
+               
+             
+              <p className="text-center" >{item.Equalification}</p>
 
               <div className="flex gap-4 justify-center">
                 <FaRegEye
@@ -520,7 +543,7 @@ export default function AcadmicQualifications() {
                   size={16}
                   className=" cursor-pointer text-white "
                   onClick={() => handlePageChange(currentPage - 1)}
-                  
+
                 />
                 Prev
               </button>
@@ -552,14 +575,14 @@ export default function AcadmicQualifications() {
               className="px-2 py-2 flex flex-row items-center gap-1 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 active:scale-95 text-white disabled:opacity-50"
               disabled={currentPage === totalPages}
             >
-               
+
               Next
               <FaForwardStep
-                  size={16}
-                  className=" cursor-pointer text-white "
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  
-                />
+                size={16}
+                className=" cursor-pointer text-white "
+                onClick={() => handlePageChange(currentPage - 1)}
+
+              />
             </button>
 
 
