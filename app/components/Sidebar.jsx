@@ -94,7 +94,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <div className="flex gap-2" onClick={handleDashboardClick}>
               <img src="/assets/logo.png" className="w-6 h-6" alt="Logo" />
               {showContent && (
-                <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">Spike Admin</h1>
+                <h1 className="text-lg font-bold">Spike Admin</h1>
               )}
             </div>
 
@@ -132,7 +132,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                       // Corrected onClick handler to toggle expanded state
                       onClick={() => setExpanded(isGroupOpen ? '' : groupName)}
                       className={`relative w-full flex items-center px-4 py-3 text-base font-normal rounded-e-3xl transition 
-                        ${isGroupOpen ? groupPalette.active : 'text-gray-900 dark:text-gray-200'}`}
+                        ${isGroupOpen ? groupPalette.active : ''}`}
                       style={
                         isGroupOpen
                           ? hoverSlideActiveStyle(groupPalette.start, groupPalette.end)
@@ -142,7 +142,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                       onMouseLeave={(e) => !isGroupOpen && (e.currentTarget.style.backgroundSize = '0% 100%')}
                       aria-expanded={isGroupOpen}
                     >
-                      <span className="flex items-center gap-2 flex-1">
+                      <span className="flex items-center gap-2 flex-1 text-gray-500">
                         {groupIcons[groupName] || groupIcons.Default}
                         {showContent && <span>{groupName}</span>}
                       </span>
@@ -159,7 +159,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                         isGroupOpen ? 'max-h-[9999px] mt-2' : 'max-h-0'
                       }`}
                     >
-                      <div className="pl-4 pr-0 flex flex-col gap-2">
+                      <div className="pl-4 pr-0 flex flex-col gap-2 ">
                         {items.map((item, i) => {
                           const isActive = active === item.WebModuleName;
                           const palette = colorPalettes[i % colorPalettes.length];
@@ -172,7 +172,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                                 if (isMobile) setIsOpen(false);
                               }}
                               className={`flex items-center gap-2 px-4 py-2 cursor-pointer rounded-e-3xl transition-colors duration-200 
-                                ${isActive ? palette.active : 'text-gray-700 dark:text-gray-200'}`}
+                                ${isActive ? palette.active : 'text-gray-500'}`}
                               style={
                                 isActive
                                   ? hoverSlideActiveStyle(palette.start, palette.end)
@@ -200,20 +200,20 @@ export default function Sidebar({ isOpen, setIsOpen }) {
         </Scrollbar>
 
         {showContent && (
-          <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-primary dark:bg-gray-900">
+          <div className="p-4 border-t border-gray-200 dark:border-gray-800 bg-primary ">
             <div
-              className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} bg-blue-50 dark:bg-gray-800 px-4 py-2 rounded-2xl cursor-pointer hover:shadow-sm transition`}
+              className={`flex items-center ${isOpen ? 'justify-between' : 'justify-center'} bg-blue-50  px-4 py-2 rounded-2xl cursor-pointer hover:shadow-sm transition`}
             >
               <div className="flex items-center gap-2">
                 <img src="/assets/logo.png" className="w-8 h-8 rounded-full object-cover" alt="User" />
                 {showContent && (
                   <div>
-                    <p className="text-sm font-semibold text-gray-800 dark:text-gray-100">Mike</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Admin</p>
+                    <p className="text-sm font-semibold text-gray-600 ">Mike</p>
+                    <p className="text-xs text-gray-500 ">Admin</p>
                   </div>
                 )}
               </div>
-              {showContent && <FiChevronRight className="text-gray-500 dark:text-gray-400" />}
+              {showContent && <FiChevronRight className="text-gray-500 " />}
             </div>
           </div>
         )}

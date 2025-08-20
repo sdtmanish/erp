@@ -41,10 +41,10 @@ export default function Welcome() {
     <div className=" flex flex-col lg:flex-row w-[96%] md:w-[90%] max-w-[1600px] mx-auto gap-4 justify-between items-start  p-2 ">
       
       {/* Welcome Card */}
-      <div className="bg-primary rounded-2xl shadow-md p-6 flex flex-col sm:flex-row items-center sm:items-start justify-between w-full lg:max-w-xl mb-2 mt-1">
+      <div className="bg-primary dark:bg-primary rounded-2xl border border-gray-100 shadow-md p-6 flex flex-col sm:flex-row items-center sm:items-start justify-between w-full lg:max-w-xl mb-2 mt-1">
         <div className="space-y-2 flex-1 text-center sm:text-left">
-          <h2 className="text-lg font-medium text-gray-900">Welcome {name}</h2>
-          <p className="text-sm text-gray-500">Check All The Statistics</p>
+          <h2 className="text-lg font-medium ">Welcome {name}</h2>
+          <p className="text-sm ">Check All The Statistics</p>
           <button
             className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2 rounded-full"
             onClick={handleClick}
@@ -67,9 +67,9 @@ export default function Welcome() {
       </div>
 
       {/* Stat Boxes */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full lg:w-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 w-full lg:w-auto ">
         <StatCard
-          icon={<PiShoppingCart className="text-white text-2xl" />}
+          icon={<PiShoppingCart className="text-white text-2xl " />}
           value="2358"
           label="Sales"
           change="+23%"
@@ -98,7 +98,7 @@ export default function Welcome() {
 function StatCard({ icon, value, label, change, color }) {
   return (
     <div
-      className={`min-w-[150px] bg-primary rounded-xl shadow-md p-4 text-black flex flex-col justify-between`}
+      className={`min-w-[150px] bg-primary rounded-xl shadow-md p-4  flex flex-col justify-between`}
     >
       <div className="flex justify-between items-start">
         {icon}

@@ -48,7 +48,7 @@ export default function TopEmployees() {
             className="bg-primary rounded-xl shadow-md p-6 flex flex-col md:flex-row justify-between items-start md:items-center"
           >
             <div className="flex flex-col md:grid md:grid-cols-4 md:items-center w-full space-y-2 md:space-y-0">
-              <div className="font-semibold text-lg text-gray-800">{emp.name}</div>
+              <div className="font-semibold text-lg ">{emp.name}</div>
               <div className="text-gray-500">{emp.role}</div>
               <div className="text-gray-600">{emp.hourRate}</div>
               <div className="text-blue-500 font-medium">{emp.skills}</div>

@@ -421,7 +421,7 @@ export default function AcadmicQualifications() {
         {/* Header Row */}
         <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem]
         sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] bg-[#fbfbfb] lg:text-base
-        items-center justify-between border-b border-gray-300 mb-2 text-sm font-medium px-4 pt-4 pb-2 ">
+        items-center justify-between border-b border-gray-300 mb-2 text-sm font-medium px-4 pt-4 pb-2 text-gray-800 ">
           <div className="flex flex-row gap-1 items-center ">
             <p>QUALIFICATION</p>
 

@@ -13,7 +13,7 @@ export default function CalendarComponent() {
 
   // Create empty cells for the previous month's days
   for (let i = 0; i < firstDayOfMonth; i++) {
-    calendarCells.push(<div key={`prev-${i}`} className="p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"></div>);
+    calendarCells.push(<div key={`prev-${i}`} className="p-4 border border-gray-200 bg-gray-50 "></div>);
   }
 
   // Create cells for the current month's days
@@ -24,8 +24,8 @@ export default function CalendarComponent() {
     calendarCells.push(
       <div 
         key={`day-${i}`} 
-        className={`p-4 border border-gray-200 dark:border-gray-700 text-center cursor-pointer font-medium
-          ${isToday ? 'bg-indigo-500 text-white dark:bg-indigo-500' : 'hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-colors duration-200'}`}
+        className={`p-4 border border-gray-200 text-center cursor-pointer font-medium
+          ${isToday ? 'bg-indigo-500 text-white ' : 'hover:bg-indigo-100 transition-colors duration-200'}`}
       >
         {i}
       </div>
@@ -35,7 +35,7 @@ export default function CalendarComponent() {
   // Fill the rest of the grid with empty cells for the next month
   const remainingCells = totalCells - calendarCells.length;
   for (let i = 1; i <= remainingCells; i++) {
-    calendarCells.push(<div key={`next-${i}`} className="p-4 border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800"></div>);
+    calendarCells.push(<div key={`next-${i}`} className="p-4 border border-gray-200 bg-gray-50 "></div>);
   }
 
   const handlePrevMonth = () => {
@@ -47,29 +47,29 @@ export default function CalendarComponent() {
   };
 
   return (
-    <div className="w-[96%] md:w-[90%] max-w-[1600px] mx-auto mb-4 mt-4 bg-primary  rounded-2xl shadow-2xl overflow-hidden transition-colors duration-300">
+    <div className="w-[96%] md:w-[90%] max-w-[1600px] mx-auto mb-4 mt-4 bg-primary rounded-2xl shadow-2xl overflow-hidden transition-colors duration-300">
       {/* Calendar Navigation */}
-      <div className="flex justify-between items-center px-6 py-4 bg-gray-50 dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-        <button onClick={handlePrevMonth} className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+      <div className="flex justify-between items-center px-6 py-4 bg-gray-50 dark:bg-gray-400  border-b border-gray-200 ">
+        <button onClick={handlePrevMonth} className="p-2 -400 hover:bg-gray-200 rounded-full transition-colors duration-200">
           <FaChevronLeft size={18} />
         </button>
-        <span className="text-xl font-bold text-gray-800 dark:text-white">
+        <span className="text-xl font-bold ">
           {currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}
         </span>
-        <button onClick={handleNextMonth} className="p-2 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full transition-colors duration-200">
+        <button onClick={handleNextMonth} className="p-2 hover:bg-gray-200 rounded-full transition-colors duration-200">
           <FaChevronRight size={18} />
         </button>
       </div>
 
       {/* Days of the week */}
-      <div className="grid grid-cols-7 text-center font-bold text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-800">
+      <div className="grid grid-cols-7 text-center font-bold text-sm bg-gray-100 dark:bg-gray-400  ">
         {days.map(day => (
-          <div key={day} className="p-3 border-r last:border-r-0 border-gray-200 dark:border-gray-700">{day}</div>
+          <div key={day} className="p-3 border-r last:border-r-0 border-gray-200  ">{day}</div>
         ))}
       </div>
 
       {/* Calendar Grid */}
-      <div className="grid grid-cols-7">
+      <div className="grid grid-cols-7 ">
         {calendarCells}
       </div>
     </div>
