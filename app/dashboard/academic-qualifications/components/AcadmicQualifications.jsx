@@ -356,91 +356,94 @@ export default function AcadmicQualifications() {
   return (
     <div className=" p-2 w-[96%] max-w-[1600px] bg-primary mx-auto md:w-[90%] ">
       {/* Search Bar + Container Header */}
-      <div className="flex justify-between items-center p-4 rounded-2xl shadow-md backdrop-blur-lg bg-primary h-26 ">
-
-        <div className="flex flex-row items-center">
-          <div className="relative">
-            <FiSearch
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder="Search..."
-              className=" bg-white border border-gray-400 rounded-xl h-10 pl-9 text-md focus:outline-none focus:border-blue-300"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div>
-            <select
-             value={rowsPerPage}
-             onChange={(e)=> setRowsPerPage(Number(e.target.value))}
-             className="focus:outline-none cursor-pointer"
-
-
-            >
-              <option>10</option>
-              <option>20</option>
-              <option>50</option>
-              <option>100</option>
-            </select>
-          </div>
-
-        </div>
-
-        <div className="flex flex-row gap-2">
-          <button
-            className="px-2 py-2 flex flex-row gap-1  bg-blue-500 rounded-lg text-white cursor-pointer hover:bg-blue-600
-            active:scale-95 active:bg-blue-800 
-            "
-            onClick={handleAddNew}
-          >
-            Add New
-            <MdAddToPhotos
-              size={16} />
-
-          </button>
-          <button
-            className={` flex flex-row gap-1 px-4 py-2 rounded-lg  text-white cursor-pointer 
-              ${selectedItems.length
-                ? "bg-red-600 hover:bg-red-700 active:scale-95 active:bg-red-800"
-                : "bg-red-400 cursor-not-allowed active:scale-100 active:bg-red-400"
-              }`}
-            onClick={handleDeleteSelected}
-            disabled={!selectedItems.length}
-          >
-            Delete All
-            <FaTrash size={14} />
-          </button>
-
-        </div>
-      </div>
-
+ {/* Top section with search, rows per page, and action buttons */}
+            <div className="flex flex-col md:flex-row justify-between items-center p-4 rounded-2xl shadow-md backdrop-blur-lg bg-white h-26 mb-4">
+                {/* Search and Rows per page */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 md:mb-0 w-full md:w-auto">
+                    <div className="relative w-full sm:w-auto">
+                        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
+                        <input
+                            type="text"
+                            placeholder="Search..."
+                            className="bg-white border border-gray-300 rounded-xl h-10 pl-9 pr-3 text-md focus:outline-none focus:border-blue-400 w-full sm:w-auto min-w-[200px]"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <label htmlFor="rowsPerPage" className="text-gray-700 text-sm">Rows per page:</label>
+                        <select
+                            id="rowsPerPage"
+                            value={rowsPerPage}
+                            onChange={(e) => setRowsPerPage(Number(e.target.value))}
+                            className="border border-gray-300 rounded-lg px-2 py-1 text-md focus:outline-none focus:border-blue-400 cursor-pointer"
+                        >
+                            <option value={10}>10</option>
+                            <option value={20}>20</option>
+                            <option value={50}>50</option>
+                            <option value={100}>100</option>
+                        </select>
+                    </div>
+                </div>
+                {/* Action Buttons */}
+                <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                   <button
+                              className="px-2 py-2 flex flex-row gap-1  bg-blue-500 rounded-lg text-white cursor-pointer hover:bg-blue-600
+                              active:scale-95 active:bg-blue-800 
+                              "
+                              onClick={handleAddNew}
+                            >
+                              Add New
+                              <MdAddToPhotos
+                                size={16} />
+                  
+                            </button>
+                    <button
+                               className={` flex flex-row gap-1 px-4 py-2 rounded-lg  text-white cursor-pointer 
+                                 ${selectedItems.length
+                                   ? "bg-red-600 hover:bg-red-700 active:scale-95 active:bg-red-800"
+                                   : "bg-red-400 cursor-not-allowed active:scale-100 active:bg-red-400"
+                                 }`}
+                               onClick={handleDeleteSelected}
+                               disabled={!selectedItems.length}
+                             >
+                               Delete All
+                               <FaTrash size={14} />
+                             </button>
+                </div>
+            </div>
       <div className="bg-primary rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
-        {/* Header Row */}
-        <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem]
-        sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] bg-[#fbfbfb] lg:text-base
-        items-center justify-between border-b border-gray-300 mb-2 text-sm font-medium px-4 pt-4 pb-2 text-gray-800 ">
-          <div className="flex flex-row gap-1 items-center ">
-            <p>QUALIFICATION</p>
-
-            <button className="cursor-pointer p-1  rounded-3xl hover:bg-gray-200   active:scale-90"
-              onClick={handleReverseSorting}
-            >
-              <Image src="/assets/asc-desc-icon.png"
-                alt="ascending-descending-icon"
-                height={12}
-                width={12}
-              /></button>
-          </div>
-
-          <p className="text-center">TYPE</p>
-          <p className="text-center">LEVEL</p>
-          <p className="text-center" >EQUIVALENT TO</p>
-          <p className="text-center">ACTIONS</p>
-        </div>
-
+        {/* Table Header */}
+                            <div className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem]  items-center justify-between
+                    sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_8rem_8rem_10rem_5rem] lg:text-base bg-[#fbfbfb]
+                    border-b border-gray-200 text-xs px-4 py-3  rounded-md" >
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        type="checkbox"
+                                        className="w-4 h-4 border border-gray-400 rounded accent-blue-500 cursor-pointer"
+                                        checked={selectedItems.length === currentRows.length && currentRows.length > 0}
+                                        onChange={() => {
+                                            if (selectedItems.length === currentRows.length) {
+                                                setSelectedItems([]);
+                                            } else {
+                                                setSelectedItems(currentRows.map(item =>item.acadq_code));
+                                            }
+                                        }}
+                                    />
+                                    <p>NAME</p>
+                                    <button className="cursor-pointer p-1 rounded-full hover:bg-gray-200 active:scale-90 transition-all duration-200" onClick={handleReverseSorting}>
+                                        <Image src="/assets/asc-desc-icon.png"
+                                                       alt="ascending-descending-icon"
+                                                       height={12}
+                                                       width={12}
+                                                     />
+                                    </button>
+                                </div>
+                                <p className="text-center">REG. NO</p>
+                                <p className="text-center">CLASS NAME</p>
+                                <p className="text-center">PHONE</p>
+                                <p className="text-center">ACTIONS</p>
+                            </div>
         {/* Data Rows */}
         {currentRows.length > 0 ? (
           currentRows.map((item) => (
