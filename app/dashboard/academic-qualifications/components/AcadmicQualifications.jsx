@@ -293,7 +293,7 @@ export default function AcadmicQualifications() {
     }
 
     setConfirmModalContent({
-      title: 'Delect Selected Row',
+     
       message: `Are you sure you want to delete ${selectedItems.length} selected qualification(s)? `,
       onConfirm: async () => {
         try {

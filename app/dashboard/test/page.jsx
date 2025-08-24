@@ -1,12 +1,14 @@
 'use client'
 
-import EmployeeFormModal from "../employee/components/EmployeeFormModal"
+import DataTable from "../components/table/DataTable"
 
 export default function(){
      return (
         <div>
         
-            <EmployeeFormModal/>
+
+        <DataTable/>
+          
         </div>
      )
 }
