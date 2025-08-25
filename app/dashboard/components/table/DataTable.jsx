@@ -5,48 +5,65 @@ import { FaBackwardStep, FaForwardStep, FaTrash } from "react-icons/fa6";
 import { MdAddToPhotos } from "react-icons/md";
 import Image from "next/image";
 
-export default function DataTable() {
-  const [data, setData] = useState([]);
+export default function DataTable({ data = [], error, columns = [] }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("asc");
+  const [sortColumn, setSortColumn] = useState(columns[0]?.key || "");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedItems, setSelectedItems] = useState([]);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const filterdData = data.filter(
-    (item) =>
-      item.acadqname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      item.Remarks?.toLowerCase().includes(searchTerm.toLowerCase())
+  // ✅ Filter based on search term across all columns
+  const filteredData = data.filter((item) =>
+    columns.some((col) =>
+      String(item[col.key] || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    )
   );
 
-  const sortedData = [...filterdData].sort((a, b) => {
-    const nameA = a.acadqname.toLowerCase();
-    const nameB = b.acadqname.toLowerCase();
+  // ✅ Dynamic sorting logic
+  const sortedData = [...filteredData].sort((a, b) => {
+    const valA = a[sortColumn];
+    const valB = b[sortColumn];
 
-    if (nameA < nameB) return sortOrder === "asc" ? -1 : 1;
-    if (nameA > nameB) return sortOrder === "asc" ? 1 : -1;
+    if (valA == null) return sortOrder === "asc" ? 1 : -1;
+    if (valB == null) return sortOrder === "asc" ? -1 : 1;
+
+    if (!isNaN(valA) && !isNaN(valB)) {
+      return sortOrder === "asc" ? valA - valB : valB - valA;
+    }
+
+    const strA = String(valA).toLowerCase();
+    const strB = String(valB).toLowerCase();
+    if (strA < strB) return sortOrder === "asc" ? -1 : 1;
+    if (strA > strB) return sortOrder === "asc" ? 1 : -1;
     return 0;
   });
 
   const indexOfLastRow = currentPage * rowsPerPage;
   const indexOfFirstRow = indexOfLastRow - rowsPerPage;
   const currentRows = sortedData.slice(indexOfFirstRow, indexOfLastRow);
-
-  const totalPages = Math.ceil(filterdData.length / rowsPerPage);
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, rowsPerPage]);
 
-  const handleReverseSorting = () => {
-    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+  const handleSortChange = (columnKey) => {
+    if (sortColumn === columnKey) {
+      setSortOrder((prev) => (prev === "asc" ? "desc" : "asc"));
+    } else {
+      setSortColumn(columnKey);
+      setSortOrder("asc");
+    }
   };
 
-  const handleCheckboxChange = (acadq_code) => {
+  const handleCheckboxChange = (id) => {
     setSelectedItems((prev) =>
-      prev.includes(acadq_code)
-        ? prev.filter((code) => code !== acadq_code)
-        : [...prev, acadq_code]
+      prev.includes(id)
+        ? prev.filter((code) => code !== id)
+        : [...prev, id]
     );
   };
 
@@ -89,15 +106,12 @@ export default function DataTable() {
 
   return (
     <div className="p-2 w-[96%] max-w-[1600px] bg-primary mx-auto md:w-[90%]">
-      {/* Search Bar + Container Header */}
+      {/* Search Bar + Header */}
       <div className="flex flex-col md:flex-row justify-between items-center p-4 rounded-2xl shadow-md backdrop-blur-lg bg-white h-26 mb-4">
-        {/* Search and Rows per page */}
         <div className="flex flex-col sm:flex-row items-center gap-4 mb-4 md:mb-0 w-full md:w-auto">
+          {/* Search */}
           <div className="relative w-full sm:w-auto">
-            <FiSearch
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-              size={18}
-            />
+            <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
             <input
               type="text"
               placeholder="Search..."
@@ -106,6 +120,7 @@ export default function DataTable() {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
+          {/* Rows per page */}
           <div className="flex items-center gap-2">
             <label htmlFor="rowsPerPage" className="text-gray-700 text-sm">
               Rows per page:
@@ -123,121 +138,86 @@ export default function DataTable() {
             </select>
           </div>
         </div>
+
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <button
-            className="px-2 py-2 flex flex-row gap-1 bg-blue-500 rounded-lg text-white cursor-pointer hover:bg-blue-600 active:scale-95 active:bg-blue-800"
-          >
-            Add New
-            <MdAddToPhotos size={16} />
+          <button className="px-2 py-2 flex flex-row gap-1 bg-blue-500 rounded-lg text-white cursor-pointer hover:bg-blue-600 active:scale-95 active:bg-blue-800">
+            Add New <MdAddToPhotos size={16} />
           </button>
           <button
-            className={`flex flex-row gap-1 px-4 py-2 rounded-lg text-white cursor-pointer 
-              ${
-                selectedItems.length
-                  ? "bg-red-600 hover:bg-red-700 active:scale-95 active:bg-red-800"
-                  : "bg-red-400 cursor-not-allowed"
-              }`}
+            className={`flex flex-row gap-1 px-4 py-2 rounded-lg text-white cursor-pointer ${
+              selectedItems.length
+                ? "bg-red-600 hover:bg-red-700 active:scale-95 active:bg-red-800"
+                : "bg-red-400 cursor-not-allowed"
+            }`}
             disabled={!selectedItems.length}
           >
-            Delete All
-            <FaTrash size={14} />
+            Delete All <FaTrash size={14} />
           </button>
         </div>
       </div>
 
+      {/* Table */}
       <div className="bg-primary rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
         {/* Table Header */}
-        <div
-          className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between
-            sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_8rem_8rem_10rem_5rem] lg:text-base bg-[#fbfbfb]
-            border-b border-gray-200 text-xs px-4 py-3 rounded-md"
-        >
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] items-center justify-between bg-[#fbfbfb] border-b border-gray-200 text-xs px-4 py-3 rounded-md">
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
               className="w-4 h-4 border border-gray-400 rounded accent-blue-500 cursor-pointer"
-              checked={
-                selectedItems.length === currentRows.length &&
-                currentRows.length > 0
-              }
+              checked={selectedItems.length === currentRows.length && currentRows.length > 0}
               onChange={() => {
                 if (selectedItems.length === currentRows.length) {
                   setSelectedItems([]);
                 } else {
-                  setSelectedItems(currentRows.map((item) => item.acadq_code));
+                  setSelectedItems(currentRows.map((item) => item[columns[0].key]));
                 }
               }}
             />
-            <p>NAME</p>
-            <button
-              className="cursor-pointer p-1 rounded-full hover:bg-gray-200 active:scale-90 transition-all duration-200"
-              onClick={handleReverseSorting}
-            >
-              <Image
-                src="/assets/asc-desc-icon.png"
-                alt="ascending-descending-icon"
-                height={12}
-                width={12}
-              />
-            </button>
           </div>
-          <p className="text-center">REG. NO</p>
-          <p className="text-center">CLASS NAME</p>
-          <p className="text-center">PHONE</p>
-          <p className="text-center">ACTIONS</p>
+          {columns.map((col) => (
+            <p
+              key={col.key}
+              className="text-center cursor-pointer"
+              onClick={() => handleSortChange(col.key)}
+            >
+              {col.label} {sortColumn === col.key ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+            </p>
+          ))}
+          <p className="text-center">Actions</p>
         </div>
-        {/* Data Rows */}
+
+        {/* Table Rows */}
         {currentRows.length > 0 ? (
           currentRows.map((item) => (
             <div
-              key={item.acadq_code}
-              className="grid grid-cols-[12rem_10rem_6rem_10rem_5rem] items-center justify-between
-                sm:grid-cols-[6rem_3rem_2rem_6rem_5rem] lg:grid-cols-[12rem_10rem_6rem_10rem_5rem] lg:text-sm
-                border-b border-gray-200 text-xs px-4 py-3 hover:bg-emerald-100 rounded-md"
+              key={item[columns[0].key]}
+              className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] items-center justify-between border-b border-gray-200 text-xs px-4 py-3 hover:bg-emerald-100 rounded-md"
             >
               <div className="flex flex-row gap-2 items-center">
                 <input
                   type="checkbox"
                   className="w-4 h-4 border border-gray-400 rounded"
-                  checked={selectedItems.includes(item.acadq_code)}
-                  onChange={() => handleCheckboxChange(item.acadq_code)}
+                  checked={selectedItems.includes(item[columns[0].key])}
+                  onChange={() => handleCheckboxChange(item[columns[0].key])}
                 />
-                <p>{item.acadqname}</p>
               </div>
-              <p className="text-center">{item.Remarks}</p>
-              <p className="text-center">{item.Preference}</p>
-              <p className="text-center">{item.Equalification}</p>
+              {columns.map((col) => (
+                <p key={col.key} className="text-center">
+                  {item[col.key]}
+                </p>
+              ))}
               <div className="flex gap-4 justify-center">
-                <Image
-                  src="/assets/icons/view.png"
-                  alt="View"
-                  width={18}
-                  height={18}
-                  className="cursor-pointer"
-                />
-                <Image
-                  src="/assets/icons/edit.png"
-                  alt="Edit"
-                  width={18}
-                  height={18}
-                  className="cursor-pointer"
-                />
-                <Image
-                  src="/assets/icons/trash-bin.png"
-                  alt="Delete"
-                  width={18}
-                  height={18}
-                  className="cursor-pointer"
-                />
+                <Image src="/assets/icons/view.png" alt="View" width={18} height={18} className="cursor-pointer" />
+                <Image src="/assets/icons/edit.png" alt="Edit" width={18} height={18} className="cursor-pointer" />
+                <Image src="/assets/icons/trash-bin.png" alt="Delete" width={18} height={18} className="cursor-pointer" />
               </div>
             </div>
           ))
         ) : (
-          <div className="text-center py-6 text-gray-500 col-span-full">
-            No records found
-          </div>
+          <div className="text-center py-6 text-gray-500 col-span-full">No records found</div>
         )}
+
         {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center items-center mt-4 pb-4 gap-2">
@@ -246,8 +226,7 @@ export default function DataTable() {
               disabled={currentPage === 1}
               className="px-2 py-2 flex flex-row items-center gap-1 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 active:scale-95 text-white disabled:opacity-50"
             >
-              <FaBackwardStep size={16} />
-              Prev
+              <FaBackwardStep size={16} /> Prev
             </button>
             <button
               onClick={() => handlePageChange(1)}
@@ -269,8 +248,7 @@ export default function DataTable() {
               className="px-2 py-2 flex flex-row items-center gap-1 bg-blue-500 rounded-lg cursor-pointer hover:bg-blue-600 active:scale-95 text-white disabled:opacity-50"
               disabled={currentPage === totalPages}
             >
-              Next
-              <FaForwardStep size={16} />
+              Next <FaForwardStep size={16} />
             </button>
           </div>
         )}

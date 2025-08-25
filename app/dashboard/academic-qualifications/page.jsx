@@ -1,6 +1,8 @@
 'use client'
 
-import AcadmicQualifications from "@/app/dashboard/academic-qualifications/components/AcadmicQualifications"
+import AcadmicQualifications from "./components/AcadmicQualifications"
+
+
 
 export default function AcademicQualifications(){
     return (

@@ -1,13 +1,13 @@
 'use client'
 
+
 import DataTable from "../components/table/DataTable"
 
 export default function(){
      return (
         <div>
         
-
-        <DataTable/>
+  this is test page
           
         </div>
      )
