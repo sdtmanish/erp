@@ -160,8 +160,8 @@ export default function DataTable({ data = [], error, columns = [] }) {
       {/* Table */}
       <div className="bg-primary rounded-2xl shadow-xl backdrop-blur-lg mt-4 px-4 pr-2">
         {/* Table Header */}
-        <div className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] items-center justify-between bg-[#fbfbfb] border-b border-gray-200 text-xs px-4 py-3 rounded-md">
-          <div className="flex items-center gap-2">
+        <div className="grid grid-cols-[24px_minmax(200px,1fr)_minmax(100px,1fr)_minmax(70px,1fr)_minmax(140px,1fr)_minmax(120px,1fr)] items-center bg-[#fbfbfb] border-b border-gray-200 text-xs px-4 py-3 rounded-md">
+          <div className="flex items-center justify-center">
             <input
               type="checkbox"
               className="w-4 h-4 border border-gray-400 rounded accent-blue-500 cursor-pointer"
@@ -176,15 +176,16 @@ export default function DataTable({ data = [], error, columns = [] }) {
             />
           </div>
           {columns.map((col) => (
-            <p
-              key={col.key}
-              className="text-center cursor-pointer"
-              onClick={() => handleSortChange(col.key)}
-            >
-              {col.label} {sortColumn === col.key ? (sortOrder === "asc" ? "↑" : "↓") : ""}
-            </p>
+            <div key={col.key} className="min-w-0">
+              <p
+                className="truncate cursor-pointer text-base"
+                onClick={() => handleSortChange(col.key)}
+              >
+                {col.label} {sortColumn === col.key ? (sortOrder === "asc" ? "↑" : "↓") : ""}
+              </p>
+            </div>
           ))}
-          <p className="text-center">Actions</p>
+          <p className="text-center text-base">Actions</p>
         </div>
 
         {/* Table Rows */}
@@ -192,9 +193,9 @@ export default function DataTable({ data = [], error, columns = [] }) {
           currentRows.map((item) => (
             <div
               key={item[columns[0].key]}
-              className="grid grid-cols-[repeat(auto-fit,minmax(8rem,1fr))] items-center justify-between border-b border-gray-200 text-xs px-4 py-3 hover:bg-emerald-100 rounded-md"
+              className="grid grid-cols-[24px_minmax(200px,1fr)_minmax(100px,1fr)_minmax(70px,1fr)_minmax(140px,1fr)_minmax(120px,1fr)] items-center border-b border-gray-200 text-xs px-4 py-2 h-12 hover:bg-emerald-100 rounded-md"
             >
-              <div className="flex flex-row gap-2 items-center">
+              <div className="flex justify-center">
                 <input
                   type="checkbox"
                   className="w-4 h-4 border border-gray-400 rounded"
@@ -203,9 +204,9 @@ export default function DataTable({ data = [], error, columns = [] }) {
                 />
               </div>
               {columns.map((col) => (
-                <p key={col.key} className="text-center">
-                  {item[col.key]}
-                </p>
+                <div key={col.key} className="min-w-0">
+                  <p className="truncate">{item[col.key]}</p>
+                </div>
               ))}
               <div className="flex gap-4 justify-center">
                 <Image src="/assets/icons/view.png" alt="View" width={18} height={18} className="cursor-pointer" />
