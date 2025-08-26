@@ -2,6 +2,12 @@
 import { useState, useEffect } from "react";
 import { FiSearch } from "react-icons/fi";
 import { FaBackwardStep, FaForwardStep, FaTrash } from "react-icons/fa6";
+
+import { FaRegEye } from 'react-icons/fa6';
+import { FaRegEdit } from 'react-icons/fa';
+import { MdOutlineRemoveRedEye } from 'react-icons/md';
+
+import { PiEye } from 'react-icons/pi';
 import { MdAddToPhotos } from "react-icons/md";
 import Image from "next/image";
 
@@ -209,8 +215,8 @@ export default function DataTable({ data = [], error, columns = [] }) {
                 </div>
               ))}
               <div className="flex gap-4 justify-center">
-                <Image src="/assets/icons/view.png" alt="View" width={18} height={18} className="cursor-pointer" />
-                <Image src="/assets/icons/edit.png" alt="Edit" width={18} height={18} className="cursor-pointer" />
+                <MdOutlineRemoveRedEye size={18} className="cursor-pointer" />
+                <FaRegEdit size={18} className="cursor-pointer" />
                 <Image src="/assets/icons/trash-bin.png" alt="Delete" width={18} height={18} className="cursor-pointer" />
               </div>
             </div>
