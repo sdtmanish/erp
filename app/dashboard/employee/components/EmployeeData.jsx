@@ -13,7 +13,7 @@ export default function EmployeeData(){
 
         try{
         
-            const AllEmployeeData = await fetch('http://dolphinapi.myportal.co.in/api/DisplayAllEmployeeP',{
+            const allEmployeeData = await fetch('http://dolphinapi.myportal.co.in/api/DisplayAllEmployeeP',{
                 method:'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -29,11 +29,11 @@ export default function EmployeeData(){
 
             })
             
-            if(!AllEmployeeData.ok){
-                throw new Error(`HTTP ERROR ${AllEmployeeData.status}`);
+            if(!allEmployeeData.ok){
+                throw new Error(`HTTP ERROR ${allEmployeeData.status}`);
             }
         
-            const employeeData = await AllEmployeeData.json();
+            const employeeData = await allEmployeeData.json();
             console.log(employeeData);
             setData(employeeData)
 

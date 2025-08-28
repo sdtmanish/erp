@@ -613,7 +613,23 @@ export default function EmployeeFormModal({ handleCloseModal, handleSubmit }) {
             Designation
           </label>
         </div>
+
+        <div className="relative">
+        <input 
+        id="room"
+        name="room" 
+         className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
+          />
+        <label 
+        htmlFor="room"
+       className="absolute left-3 top-3 text-gray-500 text-base transition-all duration-200 ease-in-out 
+            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
+            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+        >Room No </label>
       </div>
+      </div>
+
+      
 
       {/* Action Buttons */}
       <div className="flex justify-end gap-4 mt-8">
