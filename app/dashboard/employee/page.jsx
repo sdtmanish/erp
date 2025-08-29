@@ -11,8 +11,8 @@ export default function AllEmployeeDetails() {
         
 return (
     <div>
-       {/* <EmployeeData/> */}
-       <EmployeeFormModal/>
+       <EmployeeData/>
+       {/* <EmployeeFormModal/> */}
     </div>
 )
 }
