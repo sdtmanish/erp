@@ -1,651 +1,329 @@
 "use client";
 import React, { useState } from "react";
-import { Upload } from "lucide-react";
+import InputField from "./InputField";
 
-export default function EmployeeFormModal({ handleCloseModal, handleSubmit }) {
+export default function EmployeeFormModal() {
+  const [step, setStep] = useState(1);
+
+  // Form state (keys match field names)
   const [formData, setFormData] = useState({
-    name: "",
+    salutation: "",
+    firstName: "",
+    lastName: "",
     gender: "",
     email: "",
     contact: "",
+    religion: "",
+    category: "",
     dob: "",
-    designation: "",
+    maritalStatus: "",
+    qualifications: [
+      { degree: "", specialization: "", university: "", yearOfPassing: "", percentage: "" },
+    ],
   });
 
-  const [preview, setPreview] = useState(null);
-
-  // Handle text input change
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle image input
-  const handleImageChange = (e) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setPreview(URL.createObjectURL(file));
-    }
-  };
+  const steps = [
+    "Basic Details",
+    "Address",
+    "Qualification",
+    "Work Experience",
+    "Other Details",
+  ];
+
+  const basicDetails = [
+    {
+      id: "salutation",
+      name: "salutation",
+      label: "Salutation",
+      type: "select",
+      options: [
+        { value: "", label: "Select Salutation" },
+        { value: "mr", label: "Mr." },
+        { value: "mrs", label: "Mrs." },
+        { value: "ms", label: "Ms." },
+        { value: "dr", label: "Dr." },
+      ],
+    },
+    { id: "firstName", name: "firstName", label: "First Name", type: "text" },
+    { id: "lastName", name: "lastName", label: "Last Name", type: "text" },
+    {
+      id: "gender",
+      name: "gender",
+      label: "Gender",
+      type: "select",
+      options: [
+        { value: "", label: "Select Gender" },
+        { value: "male", label: "Male" },
+        { value: "female", label: "Female" },
+        { value: "other", label: "Other" },
+      ],
+    },
+    { id: "email", name: "email", label: "Email", type: "email" },
+    { id: "contact", name: "contact", label: "Contact", type: "text" },
+    { id: "religion", name: "religion", label: "Religion", type: "text" },
+    { id: "category", name: "category", label: "Category", type: "text" },
+    { id: "dob", name: "dob", label: "Date of Birth", type: "date" },
+    {
+      id: "maritalStatus",
+      name: "maritalStatus",
+      label: "Marital Status",
+      type: "select",
+      options: [
+        { value: "", label: "Select Status" },
+        { value: "single", label: "Single" },
+        { value: "married", label: "Married" },
+        { value: "divorced", label: "Divorced" },
+        { value: "widowed", label: "Widowed" },
+      ],
+    },
+  ];
+
+  const addressDetails = [
+    // Correspondence Address
+    { id: "corrAddressLine1", name: "corrAddressLine1", label: "Correspondence Address Line 1", type: "text" },
+    { id: "corrAddressLine2", name: "corrAddressLine2", label: "Correspondence Address Line 2", type: "text" },
+    { id: "corrCity", name: "corrCity", label: "Correspondence City", type: "text" },
+    { id: "corrState", name: "corrState", label: "Correspondence State", type: "text" },
+    { id: "corrPostalCode", name: "corrPostalCode", label: "Correspondence Postal Code", type: "text" },
+    { id: "corrCountry", name: "corrCountry", label: "Correspondence Country", type: "text" },
+
+    // Permanent Address
+    { id: "permAddressLine1", name: "permAddressLine1", label: "Permanent Address Line 1", type: "text" },
+    { id: "permAddressLine2", name: "permAddressLine2", label: "Permanent Address Line 2", type: "text" },
+    { id: "permCity", name: "permCity", label: "Permanent City", type: "text" },
+    { id: "permState", name: "permState", label: "Permanent State", type: "text" },
+    { id: "permPostalCode", name: "permPostalCode", label: "Permanent Postal Code", type: "text" },
+    { id: "permCountry", name: "permCountry", label: "Permanent Country", type: "text" },
+  ];
+
+  const qualificationFields = [
+    { id: "degree", label: "Degree / Diploma", type: "text" },
+    { id: "specialization", label: "Specialization / Major Subject", type: "text" },
+    { id: "university", label: "University / Board", type: "text" },
+    { id: "yearOfPassing", label: "Year of Passing", type: "number" },
+    { id: "percentage", label: "Percentage / CGPA", type: "text" },
+  ];
 
   return (
     <div className="w-[96%] md:w-[90%] max-w-[1600px] bg-white shadow-2xl rounded-2xl px-6 py-6 mx-auto transition-all duration-300 z-50">
-        
-      {/* Upload Image Section (unchanged) */}
-      <div className="mb-8">
-        <div className="mt-4">
-          <p className="text-sm text-gray-600 mb-2">Preview:</p>
-          <div className="w-40 h-40 border rounded-lg overflow-hidden shadow flex items-center justify-center bg-gray-100">
-            {preview ? (
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-full h-full object-cover"
-              />
-            ) : (
-              <span className="text-gray-400 text-sm">No image selected</span>
+      {/* Stepper */}
+      <div className="flex flex-row justify-center items-center w-full">
+        {steps.map((label, i) => (
+          <React.Fragment key={i}>
+            <div className="flex flex-col items-center">
+              <div
+                className={`w-12 h-12 flex items-center justify-center rounded-full cursor-pointer font-medium
+                  ${step === i + 1 ? "bg-blue-500 text-white" : "bg-gray-200 text-gray-700"}`}
+                onClick={() => setStep(i + 1)}
+              >
+                {i + 1}
+              </div>
+              <span className="mt-2 text-sm">{label}</span>
+            </div>
+            {i !== steps.length - 1 && (
+              <div
+                className={`flex-1 h-[2px] mx-2 
+                  ${step > i + 1 ? "bg-blue-500" : "bg-gray-300"}`}
+              ></div>
             )}
+          </React.Fragment>
+        ))}
+      </div>
+
+      {/* Step Content */}
+      <div className="mt-8 text-center text-lg">
+        {step === 1 && (
+          <div className="flex flex-col ">
+            <h3 className="self-start mb-4">Basic Details:</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {basicDetails.map((field) =>
+                field.type === "select" ? (
+                  <div key={field.id} className="flex flex-col text-left">
+                    <label htmlFor={field.id} className="mb-1 font-medium">
+                      {field.label}
+                    </label>
+                    <select
+                      id={field.id}
+                      name={field.name}
+                      value={formData[field.name]}
+                      onChange={handleChange}
+                      className="border border-gray-300 rounded-lg px-3 py-2"
+                    >
+                      {field.options.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : (
+                  <InputField
+                    key={field.id}
+                    id={field.id}
+                    name={field.name}
+                    type={field.type || "text"}
+                    value={formData[field.name]}
+                    onChange={handleChange}
+                    label={field.label}
+                  />
+                )
+              )}
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="self-end flex flex-row gap-4">
+              <button
+                className="bg-blue-500 px-3 py-2 text-white rounded-4xl cursor-pointer"
+                onClick={() => setStep(step - 1)}
+              >
+                Previous
+              </button>
+              <button
+                className="bg-blue-500 px-8 py-2 text-white rounded-4xl cursor-pointer"
+                onClick={() => setStep(step + 1)}
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {step === 2 && (
+        <div className="flex flex-col">
+          <h3 className="self-start text-lg mb-4">Correspondence Address:</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {addressDetails
+              .filter((field) => field.id.startsWith("corr"))
+              .map((field) => (
+                <InputField
+                  key={field.id}
+                  id={field.id}
+                  name={field.name}
+                  label={field.label}
+                  type={field.type}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                />
+              ))}
+          </div>
+
+          <h3 className="self-start text-lg mb-4">Permanent Address:</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {addressDetails
+              .filter((field) => field.id.startsWith("perm"))
+              .map((field) => (
+                <InputField
+                  key={field.id}
+                  id={field.id}
+                  name={field.name}
+                  label={field.label}
+                  type={field.type}
+                  value={formData[field.name]}
+                  onChange={handleChange}
+                />
+              ))}
+          </div>
+          <div className="self-end flex flex-row gap-4">
+            <button
+              className="bg-blue-500 px-3 py-2 text-white rounded-4xl cursor-pointer"
+              onClick={() => setStep(step - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="bg-blue-500 px-8 py-2 text-white rounded-4xl cursor-pointer"
+              onClick={() => setStep(step + 1)}
+            >
+              Next
+            </button>
           </div>
         </div>
-        <p className="text-sm font-medium text-gray-700 mb-2 mt-4">
-          Upload Image
-        </p>
-        <input
-          type="file"
-          id="image"
-          accept="image/*"
-          onChange={handleImageChange}
-          className="hidden"
-        />
-        <label
-          htmlFor="image"
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-500 w-40 text-white rounded-lg shadow cursor-pointer hover:bg-blue-600 transition"
-        >
-          <Upload size={16} />
-          Choose File
-        </label>
-      </div>
+      )}
 
+      {step === 3 && (
+        <div className="flex flex-col ">
+          <h3 className="text-lg font-semibold mb-4">Qualification Details</h3>
 
-        <h3>Basic Details:</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-         
-      
-        {/* Saltation*/}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+          {formData.qualifications.map((qualification, index) => (
+            <div
+              key={index}
+              className="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6 p-4 border border-gray-400 rounded-lg"
+            >
+              {qualificationFields.map((field) => (
+                <InputField
+                  key={field.id}
+                  id={`${field.id}-${index}`}
+                  name={field.id}
+                  type={field.type}
+                  label={field.label}
+                  value={qualification[field.id]}
+                  onChange={(e) => {
+                    const updated = [...formData.qualifications];
+                    updated[index][field.id] = e.target.value;
+                    setFormData({ ...formData, qualifications: updated });
+                  }}
+                />
+              ))}
+
+              {/* Delete button */}
+              <button
+                type="button"
+                className="absolute -top-3 -right-3 w-6 h-6 flex items-center justify-center 
+                           rounded-full bg-white border border-red-500 text-red-500 
+                           hover:bg-red-500 hover:text-white shadow"
+                onClick={() => {
+                  const updated = formData.qualifications.filter((_, i) => i !== index);
+                  setFormData({ ...formData, qualifications: updated });
+                }}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+
+          {/* Add qualification */}
+          <button
+            type="button"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg w-50 mx-auto"
+            onClick={() =>
+              setFormData({
+                ...formData,
+                qualifications: [
+                  ...formData.qualifications,
+                  { degree: "", specialization: "", university: "", yearOfPassing: "", percentage: "" },
+                ],
+              })
+            }
           >
-            Salutation
-          </label>
+            + Add Qualification
+          </button>
+
+          {/* Navigation */}
+          <div className="mt-6 flex flex-row gap-4 self-end">
+            <button
+              className="bg-blue-500 px-3 py-2 text-white rounded-4xl cursor-pointer"
+              onClick={() => setStep(step - 1)}
+            >
+              Previous
+            </button>
+            <button
+              className="bg-blue-500 px-8 py-2 text-white rounded-4xl cursor-pointer"
+              onClick={() => setStep(step + 1)}
+            >
+              Next
+            </button>
+          </div>
         </div>
+      )}
 
-        {/* Name */}
-        <div className="relative">
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="name"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Name
-          </label>
-        </div>
-
-        {/* Gender */}
-        <div className="relative">
-          <input
-            type="text"
-            id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="gender"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Gender
-          </label>
-        </div>
-
-        {/* Email */}
-        <div className="relative">
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="email"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Email
-          </label>
-        </div>
-
-      
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Contact
-          </label>
-        </div>
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Religion
-          </label>
-        </div>
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Category
-          </label>
-        </div>
-
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Contact
-          </label>
-        </div>
-
-        {/* Date of Birth */}
-        <div className="relative">
-          <input
-            type="date"
-            id="dob"
-            name="dob"
-            value={formData.dob}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="dob"
-            className="absolute left-3 -top-2 text-xs text-blue-500 bg-white px-1"
-          >
-            Date of Birth
-          </label>
-        </div>
-
-        {/* Designation */}
-        <div className="relative">
-          <input
-            type="text"
-            id="designation"
-            name="designation"
-            value={formData.designation}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="designation"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Marital Status
-          </label>
-        </div>
-      </div>
-
-      <h3>Permanent Address:</h3>
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-
-        {/* Name */}
-        <div className="relative">
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="name"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Permanent Address
-          </label>
-        </div>
-
-        {/* Gender */}
-        <div className="relative">
-          <input
-            type="text"
-            id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="gender"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            State
-          </label>
-        </div>
-
-        {/* Email */}
-        <div className="relative">
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="email"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            District
-          </label>
-        </div>
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            City
-          </label>
-        </div>
-       
-
-       
-      
-     
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Contact
-          </label>
-        </div>
-
-       
-
-       
-      </div>
-
-      <h3>Employee Joining Details:</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-
-        {/* Name */}
-        <div className="relative">
-          <input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="name"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Name
-          </label>
-        </div>
-
-        {/* Gender */}
-        <div className="relative">
-          <input
-            type="text"
-            id="gender"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="gender"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Gender
-          </label>
-        </div>
-
-        {/* Email */}
-        <div className="relative">
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="email"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Email
-          </label>
-        </div>
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Contact
-          </label>
-        </div>
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Contact
-          </label>
-        </div>
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Contact
-          </label>
-        </div>
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Contact
-          </label>
-        </div>
-
-        
-
-
-        {/* Contact */}
-        <div className="relative">
-          <input
-            type="text"
-            id="contact"
-            name="contact"
-            value={formData.contact}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="contact"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Contact
-          </label>
-        </div>
-
-        {/* Date of Birth */}
-        <div className="relative">
-          <input
-            type="date"
-            id="dob"
-            name="dob"
-            value={formData.dob}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="dob"
-            className="absolute left-3 -top-2 text-xs text-blue-500 bg-white px-1"
-          >
-            Date of Birth
-          </label>
-        </div>
-
-        {/* Designation */}
-        <div className="relative">
-          <input
-            type="text"
-            id="designation"
-            name="designation"
-            value={formData.designation}
-            onChange={handleChange}
-            placeholder=" "
-            className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-          <label
-            htmlFor="designation"
-            className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-          >
-            Designation
-          </label>
-        </div>
-
-        <div className="relative">
-        <input 
-        id="room"
-        name="room" 
-         className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 "
-          />
-        <label 
-        htmlFor="room"
-       className="absolute left-3 top-3 text-gray-500 text-base transition-all duration-200 ease-in-out 
-            peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
-            peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
-        >Room No </label>
-      </div>
-      </div>
-
-      
-
-      {/* Action Buttons */}
-      <div className="flex justify-end gap-4 mt-8">
-        <button
-          onClick={handleCloseModal}
-          className="px-6 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition"
-        >
-          Cancel
-        </button>
-        <button
-          onClick={() => handleSubmit(formData)}
-          className="px-8 py-2 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition"
-        >
-          Save
-        </button>
-      </div>
+      {step === 4 && <div>this is step 4</div>}
+      {step === 5 && <div>this is step 5</div>}
     </div>
   );
 }

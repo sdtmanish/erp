@@ -1,10 +1,10 @@
-import { Inter, Geist_Mono } from "next/font/google";
+import {Comic_Neue, Inter, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 // Inter font for sans
-const inter = Inter({
-  variable: "--font-sans",
+const comic = Comic_Neue({
   subsets: ["latin"],
+  weight: ["400", "700"],
 });
 
 // Keep Geist Mono for monospace if you need it
@@ -22,7 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body
-        className={`${inter.variable} ${geistMono.variable} antialiased`}
+        className={`${comic.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>
