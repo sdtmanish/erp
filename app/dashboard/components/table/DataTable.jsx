@@ -11,7 +11,7 @@ import { PiEye } from 'react-icons/pi';
 import { MdAddToPhotos } from "react-icons/md";
 import Image from "next/image";
 
-export default function DataTable({ data = [], error, columns = [] }) {
+export default function DataTable({ data = [], error, columns = [], onAdd, onEdit, onDelete, onView }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [sortOrder, setSortOrder] = useState("asc");
   const [sortColumn, setSortColumn] = useState(columns[0]?.key || "");
@@ -147,10 +147,14 @@ export default function DataTable({ data = [], error, columns = [] }) {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-          <button className="px-2 py-2 flex flex-row gap-1 bg-blue-500 rounded-lg text-white cursor-pointer hover:bg-blue-600 active:scale-95 active:bg-blue-800">
+          <button
+         
+  onClick={() => onAdd?.()}
+           className="px-2 py-2 flex flex-row gap-1 bg-blue-500 rounded-lg text-white cursor-pointer hover:bg-blue-600 active:scale-95 active:bg-blue-800">
             Add New <MdAddToPhotos size={16} />
           </button>
           <button
+         onClick={() => onDelete?.(selectedItems)}
             className={`flex flex-row gap-1 px-4 py-2 rounded-lg text-white cursor-pointer ${
               selectedItems.length
                 ? "bg-red-600 hover:bg-red-700 active:scale-95 active:bg-red-800"
@@ -215,9 +219,9 @@ export default function DataTable({ data = [], error, columns = [] }) {
                 </div>
               ))}
               <div className="flex gap-4 justify-center">
-                <MdOutlineRemoveRedEye size={18} className="cursor-pointer" />
-                <FaRegEdit size={18} className="cursor-pointer" />
-                <Image src="/assets/icons/trash-bin.png" alt="Delete" width={18} height={18} className="cursor-pointer" />
+                <MdOutlineRemoveRedEye onClick={()=> onView?.(item)} size={18} className="cursor-pointer" />
+                <FaRegEdit onClick={()=> onEdit?.(item)} size={18} className="cursor-pointer" />
+                <Image onClick={()=> onDelete?.(item)} src="/assets/icons/trash-bin.png" alt="Delete" width={18} height={18} className="cursor-pointer" />
               </div>
             </div>
           ))

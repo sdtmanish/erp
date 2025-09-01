@@ -18,12 +18,12 @@ export default function InputField({
         value={value}
         onChange={onChange}
         placeholder=" "
-        className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400"
+        className="peer w-full py-3 px-3 border rounded-lg text-base outline-none bg-transparent border-gray-300 focus:border-blue-400 text-gray-500"
       />
       <label
         htmlFor={id}
-        className="absolute left-3 top-3 text-gray-500 text-sm transition-all duration-200 ease-in-out 
-          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-base
+        className="absolute left-3 top-3 text-gray-800 text-sm transition-all duration-200 ease-in-out 
+          peer-placeholder-shown:top-3 peer-placeholder-shown:text-gray-500 peer-placeholder-shown:text-base
           peer-focus:top-[-8px] peer-focus:left-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-3 pb-2"
       >
         {label}
