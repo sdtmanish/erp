@@ -9,9 +9,9 @@ import EmployeeProfile from "../employee/EmployeeProfile"
 export default function () {
       return (
             <div>
-                  {/* <EmployeeProfile/> */}
+                  <EmployeeProfile/>
 
-                  <EmployeeFormModal/>
+                  {/* <EmployeeFormModal/> */}
                   
             </div>
       )

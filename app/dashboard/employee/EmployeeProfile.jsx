@@ -6,6 +6,7 @@ import { PiNotePencilLight } from 'react-icons/pi';
 import { FaTrashAlt } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { FaRegBuilding } from 'react-icons/fa';
+import { FaRegEdit } from 'react-icons/fa';
 
 export default function () {
     const [activeTab, setActiveTab] = useState('basic');
@@ -65,12 +66,19 @@ export default function () {
   },
 ];
 
+const Qualifications = [
+    {id:1, qualification:"Post Graduation", board:"Uttarakhand", year:2023, marks:"79%"},
+    {id:2, qualification:"Graduation", board:"Delhi University", year:2021, marks:"85%"},
+    {id:3, qualification:"Intermediate", board:"CBSE", year:2017, marks:"88%"},
+    {id:4, qualification:"HighSchool", board:"CBSE", year:2015, marks:"88%"},
+]
+
 
     return (
         <div className="w-[96%] md:w-[90%] max-w-[1600px]   py-6 mx-auto transition-all duration-300 z-50">
             <div className="flex flex-row justify-between gap-6  w-full ">
 
-                <div className="bg-white w-100 h-190 rounded-4xl shadow-sm">
+                <div className="bg-white w-100 h-9/10 rounded-4xl shadow-sm">
                     <div className="p-4">
                         <div className="flex flex-col justify-center items-center mt-10 ">
 
@@ -152,9 +160,9 @@ export default function () {
 
                     </div>
 
-                    <div className="flex flex-row justify-center gap-4 mt-8">
-                        <button className="bg-blue-500 px-16 py-3 text-white rounded-3xl flex flex-row gap-1 items-center "> <PiNotePencilLight size="18" />Edit</button>
-                        <button className="bg-red-300 px-14 py-3 text-white rounded-3xl flex flex-row gap-1 items-center"><FaTrashAlt />Delete</button>
+                    <div className="flex flex-row justify-center gap-4 mt-4 mb-4">
+                        <button className="bg-blue-500 px-14 py-2 text-white rounded-3xl flex flex-row gap-1 items-center "> <PiNotePencilLight size="18" />Edit</button>
+                        <button className="bg-red-300 px-12 py-2 text-white rounded-3xl flex flex-row gap-1 items-center"><FaTrashAlt />Delete</button>
                     </div>
 
                 </div>
@@ -180,7 +188,7 @@ export default function () {
 
 
                     {activeTab == "basic" &&
-                        <div className="bg-white mt-4 w-full rounded-4xl shadow-sm  py-8 flex flex-col items-center  gap-4">
+                        <div className="bg-white mt-4 w-full h-8/10 rounded-4xl shadow-sm  py-8 flex flex-col items-center  gap-4">
                             <h3 className="self-start ml-18 text-gray-600">Basic Details</h3>
 
                             <div className="w-[90%] rounded-4xl border border-gray-200 shadow-md mx-auto 
@@ -461,46 +469,34 @@ export default function () {
 
 
                     {activeTab == "qualification" &&
-                        <div className="bg-white mt-4 w-full rounded-4xl shadow-sm px-8 py-6">
+                        <div className="bg-white mt-4 w-full h-9/10 rounded-4xl shadow-sm px-8 py-6">
                             <h3 className="text-lg font-semibold">Qualification</h3>
                             <hr className="text-gray-200 mt-4" />
 
-                            <div className="mt-6">
+                            <div className="mt-4">
                                 {/* Header Row */}
-                                <div className="grid grid-cols-4 font-medium text-gray-700 border-b border-gray-200 pb-2">
+                                <div className="grid grid-cols-[0.5fr_0.7fr_0.5fr_0.5fr_0.5fr] py-2 bg-[#fbfbfb]  border-b border-gray-200 items-center justify-items-center ">
                                     <p>Qualification</p>
                                     <p>Board / University</p>
                                     <p>Year</p>
-                                    <p>Marks / Percentage</p>
+                                    <p className="text-center">Marks / Percentage</p>
+                                    <p className="px-2 text-center">Actions</p>
                                 </div>
 
-                                {/* Data Rows */}
-                                <div className="grid grid-cols-4 py-2 border-b border-gray-100">
-                                    <p>Post Graduation</p>
-                                    <p>Uttarakhand</p>
-                                    <p>2023</p>
-                                    <p>79%</p>
-                                </div>
+                                {Qualifications.map((qual,i)=>(
+                              <div key={i} className="grid grid-cols-[0.5fr_0.7fr_0.5fr_0.5fr_0.5fr] py-2 border-b border-gray-200 items-center justify-items-center hover:bg-emerald-100 rounded-md cursor-pointer">
+    <p> {qual.qualification}</p>
+    <p>{qual.board}</p>
+    <p>{qual.year}</p>
+    <p>{qual.marks}</p>
+    <div className="flex gap-4 justify-center items-center">
+        <FaRegEdit size={18} className="cursor-pointer text-amber-600" />
+        <Image src="/assets/icons/trash-bin.png" alt="Delete" width={18} height={18} className="cursor-pointer" />
+    </div>
+</div>
+                                ))}
 
-                                <div className="grid grid-cols-4 py-2 border-b border-gray-100">
-                                    <p>Graduation</p>
-                                    <p>Delhi University</p>
-                                    <p>2021</p>
-                                    <p>85%</p>
-                                </div>
-
-                                <div className="grid grid-cols-4 py-2 border-b border-gray-100">
-                                    <p>Intermediate</p>
-                                    <p>CBSE</p>
-                                    <p>2017</p>
-                                    <p>88%</p>
-                                </div>
-                                <div className="grid grid-cols-4 py-2 border-b border-gray-100">
-                                    <p>HighSchool</p>
-                                    <p>CBSE</p>
-                                    <p>2015</p>
-                                    <p>88%</p>
-                                </div>
+                                
                             </div>
                         </div>
 
@@ -597,7 +593,7 @@ export default function () {
 
 
                     {activeTab == "others" &&
-                        <div className="bg-white mt-4 w-full rounded-4xl shadow-sm px-8">Others</div>}
+                        <div className="bg-white mt-4 w-full h-9/10 rounded-4xl shadow-sm px-8">Others</div>}
 
 
                 </div>

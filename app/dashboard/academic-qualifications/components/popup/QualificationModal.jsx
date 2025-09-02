@@ -1,5 +1,6 @@
 import React from 'react';
 import { IoMdClose } from 'react-icons/io';
+import { useState } from 'react';
 
 // This component is dedicated to handling the modal's display and logic
 export default function QualificationModal({
@@ -8,12 +9,69 @@ export default function QualificationModal({
   formData,
   errors,
   handleChange,
-  handleSubmit,
+  setErrors, // ✅ added
   handleCloseModal,
+  onQualificationAdded,
 }) {
   if (!showModal) {
     return null; // Don't render anything if the modal is not visible
   }
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  // Basic validation
+  const newErrors = {};
+  if (!formData.acadqname) newErrors.acadqname = "Qualification Name is required";
+  if (!formData.Remarks) newErrors.Remarks = "Remarks is required";
+  if (!formData.Equalification) newErrors.Equalification = "Equivalent To is required";
+  if (!formData.Preference) newErrors.Preference = "Preference is required";
+
+  if (Object.keys(newErrors).length > 0) {
+    setErrors(newErrors);
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      "http://dolphinapi.myportal.co.in/api/AddAcademicQualification",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          APIKey: "Sdt!@#321",
+        },
+        body: JSON.stringify({
+          acadqname: formData.acadqname,
+          Remarks: formData.Remarks,
+          Equalification: formData.Equalification,
+          Preference: formData.Preference,
+        }),
+      }
+    );
+
+    if (response.ok) {
+      const newQualification = await response.json();
+
+      // Normalize to match DataTable
+      const normalizedQual = {
+        acadqname: formData.acadqname,
+        Remarks: formData.Remarks,
+        Equalification: formData.Equalification,
+        Preference: formData.Preference,
+        id: newQualification.id || Date.now(),
+      };
+
+      if (onQualificationAdded) {
+        onQualificationAdded(normalizedQual);
+      }
+
+      handleCloseModal();
+    }
+  } catch (error) {
+    console.error(error);
+  }
+};
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
@@ -57,8 +115,7 @@ export default function QualificationModal({
           )}
         </div>
 
-        {/* ... (repeat this pattern for other form fields: Remarks, Equalification, Preference) ... */}
-
+        {/* Remarks Field */}
         <div className="relative mb-6">
           <input
             type="text"
@@ -72,12 +129,18 @@ export default function QualificationModal({
             }`}
             disabled={modalMode === 'view'}
           />
-          <label htmlFor="Remarks" className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static">
+          <label
+            htmlFor="Remarks"
+            className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
+          >
             Remarks
           </label>
-          {errors.Remarks && <p className="text-red-500 text-sm mt-1">{errors.Remarks}</p>}
+          {errors.Remarks && (
+            <p className="text-red-500 text-sm mt-1">{errors.Remarks}</p>
+          )}
         </div>
 
+        {/* Equivalent To Field */}
         <div className="relative mb-6">
           <input
             type="text"
@@ -91,12 +154,18 @@ export default function QualificationModal({
             }`}
             disabled={modalMode === 'view'}
           />
-          <label htmlFor="Equalification" className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static">
+          <label
+            htmlFor="Equalification"
+            className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
+          >
             Equivalent To
           </label>
-          {errors.Equalification && <p className="text-red-500 text-sm mt-1">{errors.Equalification}</p>}
+          {errors.Equalification && (
+            <p className="text-red-500 text-sm mt-1">{errors.Equalification}</p>
+          )}
         </div>
 
+        {/* Preference Field */}
         <div className="relative mb-6">
           <input
             type="number"
@@ -110,12 +179,18 @@ export default function QualificationModal({
             }`}
             disabled={modalMode === 'view'}
           />
-          <label htmlFor="Preference" className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static">
+          <label
+            htmlFor="Preference"
+            className="absolute top-3 left-3 text-gray-500 transition-all duration-200 ease-in-out label-float label-static"
+          >
             Preference
           </label>
-          {errors.Preference && <p className="text-red-500 text-sm mt-1">{errors.Preference}</p>}
+          {errors.Preference && (
+            <p className="text-red-500 text-sm mt-1">{errors.Preference}</p>
+          )}
         </div>
 
+        {/* Action Buttons */}
         <div className="flex justify-end gap-2 mt-4">
           {modalMode !== 'view' && (
             <button

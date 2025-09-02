@@ -9,6 +9,7 @@ export default function AcadmicQualifications() {
   const [data, setData] = useState([]);
   const [error, setError] = useState(null);
  const [selectedItem, setSelectedItem] = useState(null);
+ 
   // modal state
   const [showModal, setShowModal] = useState(false);
   const [modalMode, setModalMode] = useState("add"); // "add" | "edit" | "view"
@@ -152,6 +153,10 @@ export default function AcadmicQualifications() {
         handleChange={handleChange}
         handleSubmit={handleSubmit}
         handleCloseModal={handleCloseModal}
+        onQualificationAdded={(newQual) => {
+    console.log("📌 Adding qualification to table:", newQual);
+    setData((prev) => [...prev, newQual]);
+  }}
       />
 
      <ConfirmModal
