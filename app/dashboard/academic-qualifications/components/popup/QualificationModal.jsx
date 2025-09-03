@@ -16,11 +16,9 @@ export default function QualificationModal({
   if (!showModal) {
     return null; // Don't render anything if the modal is not visible
   }
-
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
 
-  // Basic validation
   const newErrors = {};
   if (!formData.acadqname) newErrors.acadqname = "Qualification Name is required";
   if (!formData.Remarks) newErrors.Remarks = "Remarks is required";
@@ -33,33 +31,48 @@ export default function QualificationModal({
   }
 
   try {
-    const response = await fetch(
-      "http://dolphinapi.myportal.co.in/api/AddAcademicQualification",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          APIKey: "Sdt!@#321",
-        },
-        body: JSON.stringify({
-          acadqname: formData.acadqname,
-          Remarks: formData.Remarks,
-          Equalification: formData.Equalification,
-          Preference: formData.Preference,
-        }),
-      }
-    );
+    let url = "";
+    let method = "POST"; // backend expects POST for both add + update?
+    let body = {};
 
-    if (response.ok) {
-      const newQualification = await response.json();
-
-      // Normalize to match DataTable
-      const normalizedQual = {
+    if (modalMode === "add") {
+      url = "http://dolphinapi.myportal.co.in/api/AddAcademicQualification";
+      body = {
         acadqname: formData.acadqname,
         Remarks: formData.Remarks,
         Equalification: formData.Equalification,
         Preference: formData.Preference,
-        id: newQualification.id || Date.now(),
+      };
+    } else if (modalMode === "edit") {
+      url = "http://dolphinapi.myportal.co.in/api/ModAcademicQualification";
+      body = {
+        acadq_code: formData.acadq_code, // 
+        acadqname: formData.acadqname,
+        Remarks: formData.Remarks,
+        Equalification: formData.Equalification,
+        OldValue: formData.OldValue, // Passing acadqname as Old Value
+        Preference: formData.Preference,
+      };
+    }
+
+    const response = await fetch(url, {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        APIKey: "Sdt!@#321",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (response.ok) {
+      const result = await response.json();
+
+      const normalizedQual = {
+       acadq_code: result.acadq_code || formData.acadq_code, // 👈 use same key as DB
+        acadqname: formData.acadqname,
+        Remarks: formData.Remarks,
+        Equalification: formData.Equalification,
+        Preference: formData.Preference,
       };
 
       if (onQualificationAdded) {
@@ -72,6 +85,7 @@ export default function QualificationModal({
     console.error(error);
   }
 };
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
