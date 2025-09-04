@@ -7,6 +7,7 @@ import { BiMenuAltLeft } from 'react-icons/bi';
 import { useRouter } from 'next/navigation';
 import {useUser} from '../context/userContext';
 import { useTheme } from '../context/ThemeContext'
+import Link from 'next/link';
 
 export default function Header({ isOpen, setIsOpen }) {
   const [search, setSearch] = useState('');
@@ -104,10 +105,14 @@ export default function Header({ isOpen, setIsOpen }) {
                 <div className="flex flex-col gap-2 text-sm">
                   <button className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition">
                     <div className="bg-blue-100 text-blue-500 p-2 rounded-lg">📄</div>
+
+                    <Link href="/dashboard/myprofile">
                     <div>
                       <p className="font-medium text-gray-600">My Profile</p>
                       <p className="text-xs text-gray-400">Account Settings</p>
                     </div>
+                    </Link>
+                    
                   </button>
 
                   <button className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition">

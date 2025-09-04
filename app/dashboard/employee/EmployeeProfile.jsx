@@ -7,9 +7,82 @@ import { FaTrashAlt } from 'react-icons/fa';
 import { useState, useEffect } from 'react';
 import { FaRegBuilding } from 'react-icons/fa';
 import { FaRegEdit } from 'react-icons/fa';
+import {useUser} from '../../context/userContext';
 
-export default function () {
+export default function EmployeeProfile() {
+ const {user, error} = useUser();
+
     const [activeTab, setActiveTab] = useState('basic');
+    const [data, setData] = useState(null);
+    const [qualifications, setQualifications] = useState(null);
+
+    useEffect(()=>{
+
+        if(!user?.UserCode && !user?.UserType) return;
+
+        const getEmployeeProfileData = async()=>{
+
+            try{
+
+                const res = await fetch('http://dolphinapi.myportal.co.in/api/EmployeeDetailsP',{
+                     method:'POST',
+                     headers:{
+                        'Content-Type':'application/json',
+                        APIKey:'Sdt!@#321'
+                     },
+                     body:JSON.stringify({
+                        userId: user.UserCode,
+                        userType:user.UserType
+
+                     })
+                })
+
+                if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                const profileData = await res.json();
+                console.log(profileData);
+                setData(profileData[0]);
+
+            }catch(err){
+                console.log(err);
+            }
+        }
+
+        getEmployeeProfileData();
+    },[user])
+
+    useEffect(()=>{
+
+        if(activeTab !== 'qualification' || !user?.UserCode ) return;
+
+        const getEmployeeQualifications = async()=>{
+
+            try{
+
+                const res = await fetch('http://dolphinapi.myportal.co.in/api/DisplayEQP',{
+                    method:'POST',
+                    headers:{
+                        'Content-Type':'application/json',
+                        APIKey:'Sdt!@#321'
+                    },
+                    body:JSON.stringify({
+                        userId: user.UserCode
+                    })
+                })
+
+                if(!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+
+                const empQualData = await res.json();
+                console.log(empQualData);
+                setQualifications(empQualData);
+
+            }catch(err){
+                console.log(err);
+            }
+        }
+
+        getEmployeeQualifications();
+
+    },[activeTab,user])
 
     useEffect(() => {
         const savedTab = localStorage.getItem('activeTab')
@@ -86,8 +159,8 @@ const Qualifications = [
                                 <Image src="/assets/profile.jpg" alt="Employee Profile Picture"
                                     width="100" height="60" />
                             </div>
-                            <h3 className="mt-2 text-lg font-medium">John Mednath</h3>
-                            <p className="text-blue-400 bg-gray-200 text-sm font-normal px-2 rounded-lg">Teacher</p>
+                            <h3 className="mt-2 text-lg font-medium">{data?.Name1}</h3>
+                            <p className="text-blue-400 bg-gray-200 text-sm font-normal px-2 rounded-lg">{data?.DesignationDescrription}</p>
 
                             <div>
 
@@ -121,30 +194,30 @@ const Qualifications = [
 
                         <div className="flex flex-row gap-1">
                             <p>Name:</p>
-                            <p className="font-light "> John Metheu</p>
+                            <p className="font-light ">{data?.Name1}</p>
                         </div>
                         <div className="flex flex-row gap-1">
                             <p>Employee Id:</p>
-                            <p className="font-light "> 78364876498</p>
+                            <p className="font-light ">{data?.EmployeeCode}</p>
                         </div>
                         <div className="flex flex-row gap-1">
                             <p>Designation:</p>
-                            <p className="font-light "> Assistant Professor</p>
+                            <p className="font-light ">{data?.DesignationDescrription}</p>
                         </div>
 
                         <div className="flex flex-row gap-1">
                             <p>Email:</p>
-                            <p className="font-light ">john@gmail.com</p>
+                            <p className="font-light ">{data?.email}</p>
                         </div>
 
                         <div className="flex flex-row gap-1">
                             <p>Data Of Birth:</p>
-                            <p className="font-light ">03/05/2001</p>
+                            <p className="font-light ">{data?.DOB}</p>
                         </div>
 
                         <div className="flex flex-row gap-1">
                             <p>Phone:</p>
-                            <p className="font-light ">+91-948473633</p>
+                            <p className="font-light ">{data?.Contact}</p>
                         </div>
 
                         <div className="flex flex-row gap-1">
